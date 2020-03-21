@@ -34,7 +34,7 @@ class Board {
 FRUITS = ['strawberry', 'orange', 'pear', 'watermelon', 'bannana'];
 
 class Fruit {
-    FLY_SPEED = 300;
+    FLY_SPEED = 500;
 
     constructor(x, y, type) {
         this.el = document.createElement('div');
@@ -185,13 +185,11 @@ function init() {
 
     GUN_1 = new Gun(100, 500, 1.0 + 0.2 * (Math.random() - 0.5), 'KeyZ');
 
-    GUN_2 = new Gun(240, 500, 1.0 + 0.2 * (Math.random() - 0.5), 'KeyM');
-
-    // setInterval(function(){g.setAngle(2 * Math.random() - 1.0);}, 500);
+    GUN_2 = new Gun(220, 500, 1.0 + 0.2 * (Math.random() - 0.5), 'KeyM');
 
     BOARD = new Board();
 
-    // BOARD.sampleBoard();
+    BOARD.sampleBoard();
 
     window.requestAnimationFrame(step);
 }
