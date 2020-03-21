@@ -1,0 +1,136 @@
+body, html {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    /* background: url(https://images.photowall.com/products/52980/green-leaves-background.jpg?h=699&q=85); */
+    background-size: cover;;
+}
+
+#board {
+    display: block;
+    width: 320px;
+    height: 500px;
+    backdrop-filter: blur(2px) sepia(0.50);
+    border: 20px solid black;
+    position: relative;
+}
+
+.fruit {
+    z-index: 100;
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    background: white;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    border-radius:100%;
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;
+    border: 5px solid black;
+}
+
+.fruit-strawberry {
+    background-image: url('gfx/strawberry.png');
+    border-color: #cb1602;
+}
+
+.fruit-orange {
+    background-image: url('gfx/orange.png');
+    border-color: #fcb73c;
+}
+
+.fruit-bannana {
+    background-image: url('gfx/bannana.png');
+    border-color: #f9e224;
+}
+
+.fruit-pear {
+    background-image: url('gfx/pear.png');
+    border-color: #adfc92;
+}
+
+.fruit-watermelon {
+    background-image: url('gfx/watermelon.png');
+    border-color: #058e48;
+}
+.rotating {
+    animation-name: rotating;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes rotating {
+    from {transform: translate(-50%, -50%) rotate(0deg);}
+    to {transform: translate(-50%, -50%) rotate(360deg);}
+  }
+
+
+  /* guns */
+  /* .gun:before {
+      width: 100px;
+      height: 10px;
+      display: block;
+      content: "";
+      background: red;
+  } */
+
+  .gun {
+      z-index: 50;
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: rotate(90deg);
+      transform-origin: 50% 100%;
+      
+      width: 20px;
+      height: 60px;
+      background: url('gfx/arrow.png') center center no-repeat;;
+      /* background-color: red; */
+      background-size: 100% 100%;
+  }
+
+
+  main {
+    /* background: red; */
+    display: inline-block;
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+
+    background: url(https://c8.alamy.com/comp/W2T079/background-of-frozen-berries-top-view-of-raspberries-and-blueberries-W2T079.jpg);
+    background-size: 500px;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border: 10px solid white;
+    border-radius: 5px;
+  }
+
+  nav {
+      background: white;
+      padding: 10px;
+      width: 360px;
+      box-sizing: border-box;
+  }
+
+  nav ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+  }
+
+  nav ul li {
+      flex: 1 0;
+      width: 33%;
+      padding: 0;
+      margin: 0;
+      font-weight: bold;
+      text-align: center;
+      text-transform: uppercase;;
+  }
