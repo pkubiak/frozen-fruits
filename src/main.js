@@ -8,6 +8,12 @@ class Board {
         this.time = 0;
         this.setHUD();
         this.fruits = [];
+        this.grid = [];
+
+        for(let y=0;y<14;y++) {
+            this.grid.push(new Array(8));
+        }
+        console.log(this.grid);
     }
 
     setHUD() {       
@@ -24,13 +30,14 @@ class Board {
     }
 
     sampleBoard() {
-        for(let y=0;y<5;y++) {
-            for(let x=0;x<(y%2?7:8);x++) {
-                let fruit = new Fruit(40*x+(y%2?40:20), 20 + 34*y, random_fruit());
-                this.add(fruit);
-            }
-        }
+        for(let y=0;y<6;y++)
+            for(let x=0;x<(y%2?7:8);x++)
+                this.addOnGrid(new Fruit(0, 0, random_fruit()), x, y);
     }
+
+    // loadFromString(text) {
+    //     let lines = '';
+    // }
 
     checkCollisionDistance(fruit) {
         let best = Infinity;
@@ -61,21 +68,40 @@ class Board {
 
     snapToGrid(fruit) {
         let best = Infinity, best_pos = null;
-        for(let y=0;y<14;y++) {
-            for(let x=0;x<(y%2?7:8);x++) {
-                let pos = [40*x+(y%2?40:20), 20 + 34*y];
-                let dist = Math.hypot(fruit.x - pos[0], fruit.y - pos[1]);
-                if(dist < best) {
-                    best = dist;
-                    best_pos = pos;
+        for(let y=0;y<14;y++) 
+            for(let x=0;x<(y%2?7:8);x++)
+                if(this.grid[y][x] === undefined) {
+                    let cx = 40*x+(y%2?40:20), cy = 20 + 34*y;
+                    let dist = Math.hypot(fruit.x - cx, fruit.y - cy);
+                    if(dist < best) {
+                        best = dist;
+                        best_pos = [x, y];
+                    }
                 }
-            }
-        }
-        fruit.setPosition(best_pos[0], best_pos[1]);
+
+        return (best > 25 ? null : best_pos);
+    }
+
+    addOnGrid(fruit, x, y) {
+        if(this.grid[y][x] !== undefined)
+            throw 'Something';
+        this.grid[y][x] = fruit;
+        this.fruits.push(fruit);
+        fruit.setPosition(40 * x + (y % 2 ? 40 : 20), 20 + 34 * y);
+        return true;
     }
 
     add(fruit) {
-        this.fruits.push(fruit);
+        let pos = this.snapToGrid(fruit);
+        if(pos === null)
+            return false;
+
+        return this.addOnGrid(fruit, ...pos);
+    }
+
+    remove(fruit) {
+        this.fruits.splice(this.fruits.indexOf(fruit), 1);
+        // TODO remove from grid
     }
 }
 
@@ -92,8 +118,19 @@ class Fruit {
     }
 
     
-    destroy() {
-        // TODO
+    destroy(animate=true) {
+        let el = this.el;
+        BOARD.remove(this);
+
+        if(animate) {
+            el.classList.add('falling');
+            
+            setTimeout(function(){
+                el.remove();
+            }, 1000);
+        } else {
+            el.remove();
+        }
     }
 
     setPosition(x, y) {
@@ -103,8 +140,9 @@ class Fruit {
     }
 
     setRotating(yesno) {
-        if(yesno)this.el.classList.add('rotating');
-        else this.el.classList.remove('rotating');
+        this.el.classList[yesno ? 'add' : 'remove']('rotating');
+        // if(yesno)this.el.classList.add('rotating');
+        // else this.el.classList.remove('rotating');
     }
 
     fly(distance=1.0) {
@@ -132,7 +170,6 @@ class Fruit {
 
         if(ts[1] == min_t || ts[2] == min_t) {
             this.direction = null;
-            BOARD.snapToGrid(this);
             return false;
         }
 
@@ -171,8 +208,10 @@ class Gun {
 
     setFruit(fruit) {
         this.fruit = fruit;
-        if(fruit)
+        if(fruit) {
             fruit.setPosition(this.x, this.y);
+            fruit.el.classList.add('resting');
+        }
     }
 
     setAngle(angle) {
@@ -180,6 +219,12 @@ class Gun {
         this.el.style.transform = 'translate(-50%, -100%) rotate(' + (this.MAX_ANGLE * angle) + 'deg)';
     }
 
+    destroy() {
+        this.state = 'KILLED';
+        this.fruit.destroy(false);
+        this.el.style.transform = '';
+        this.el.classList.add('killed');
+    }
     update() {
         if(this.state == 'FREE') {
             let angle = this.angle;
@@ -200,12 +245,18 @@ class Gun {
             // this.setAngle(0.1);
         } else 
         if(this.state == 'FLY') {
-            // console.log(this.angle);
             if(!this.fruit.fly()) {
-                BOARD.add(this.fruit);
-                this.fruit.setRotating(false);
-                this.fruit = null;
-                this.state = 'FREE';
+                this.fruit.el.classList.remove('resting');
+
+                if(!BOARD.add(this.fruit)) {
+                    this.destroy();
+                } else {
+                    // BOARD.add(this.fruit);
+                    this.fruit.setRotating(false);
+                    // this.fruit.destroy();
+                    this.fruit = null;
+                    this.state = 'FREE';
+                }
             }
 
         }
@@ -215,6 +266,7 @@ class Gun {
         if(this.state == 'FREE') {
             this.state = 'FLY';
             console.log('Fire!');
+            
             this.fruit.setRotating(true);
             this.fruit.direction = 2.0 * Math.PI * (this.angle * this.MAX_ANGLE) / 360.0; // direction in radians
         }
@@ -256,13 +308,20 @@ function random_fruit() {
 function init() {
     MAIN = document.getElementById('board');
 
-    GUN_1 = new Gun(100, 500, 1.0 + 0.2 * (Math.random() - 0.5), 'KeyZ');
+    GUN_1 = new Gun(100, 500, 2.0 + 0.2 * (Math.random() - 0.5), 'KeyZ');
 
-    GUN_2 = new Gun(220, 500, 1.0 + 0.2 * (Math.random() - 0.5), 'KeyM');
+    GUN_2 = new Gun(220, 500, 2.0 + 0.2 * (Math.random() - 0.5), 'KeyM');
 
     BOARD = new Board();
 
     BOARD.sampleBoard();
+    // BOARD.loadFromString([
+    //     "0 0 0 0 0 0 0 0",
+    //     " 1 1 1 1 1 1 1 ",
+    //     "2 2 2 2 2 2 2 2",
+    //     " 3 3 3 3 3 3 3 ",
+    //     "4 4 4 4 4 4 4 4"
+    // ])
 
     window.requestAnimationFrame(step);
 }
