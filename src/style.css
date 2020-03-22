@@ -94,8 +94,9 @@ body {
 .falling {
     animation-name: falling;
     animation-duration: 1s;
-    animation-iteration-count: 5;
+    animation-iteration-count: 1;
     animation-timing-function: ease-in;
+    animation-fill-mode: forwards;
 }
 @keyframes falling {
     from {transform: translate(-50%, -50%);}

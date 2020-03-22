@@ -42,7 +42,7 @@ class Board {
         for(let y=0;y<board.length;y++)
             for(let x=y%2;x<board[y].length;x+=2) {
                 if((x>>1) >= (y % 2 ? 7 : 8)) {
-                    console.log(x, y, x>>1);
+                    // console.log(x, y, x>>1);
                     throw "Too many fruits in row";
                 }
                 if(board[y][x] == ' ')
@@ -68,7 +68,7 @@ class Board {
 
             let t0 = dot - ddist, t1 = dot + ddist;
             if(t0 <= 0.0 && t1 >= 0.0) {
-                console.log(t0, t1, dot, ddist, min_dist);
+                // console.log(t0, t1, dot, ddist, min_dist);
                 return 0.0;
             }
             if(t0 > 0 && t0 < best)
@@ -94,12 +94,68 @@ class Board {
         return (best > 25 ? null : best_pos);
     }
 
+    dfs(x, y, visited={}, type=undefined) {
+        if(x < 0 || y < 0 || y >= this.grid.length || x >= (y % 2 ? 7 : 8))
+            return false;
+        if((x + '_' + y) in visited)
+            return false;
+        if(this.grid[y][x] === undefined)
+            return false;
+        if(type !== undefined && this.grid[y][x].type != type)
+            return false;
+        visited[x + '_' + y] = true;
+
+        let dirs = (y % 2) ? [[-1, 0], [1, 0], [1, -1], [0, -1], [1, 1], [0, 1]] : [[-1, 0], [1, 0], [-1, -1], [0, -1], [-1, 1], [0, 1]];
+
+        for(let i=0;i<6;i++) {
+            let x2 = x + dirs[i][0], y2 = y + dirs[i][1];
+            this.dfs(x2, y2, visited, type);
+        }
+    }
+
+    checkGroups(fruit) {
+        let x,y;
+        for(y=0;y<this.grid.length;y++) {
+            x = this.grid[y].indexOf(fruit);
+            if(x != -1)break;
+        }
+
+        let visited = {};
+        this.dfs(x, y, visited, this.grid[y][x].type);
+        let count = Object.keys(visited).length;
+
+        if(count >= 3) {
+            for(let key in visited) {
+                let [x, y] = key.split('_');
+                this.removeFromGrid(parseInt(x), parseInt(y));
+            }
+            this.score += count * count;
+        }
+        // console.log('checkGroups:', count);
+    }
+
+    checkOrphans() {
+        let visited = {};
+        for(let x=0;x<8;x++)
+            this.dfs(x, 0, visited);
+
+        for(let y=0;y<this.grid.length;y++)
+            for(let x=0;x<this.grid[y].length;x++)
+                if(this.grid[y][x] !== undefined && !((x + '_' + y) in visited)) {
+                    this.removeFromGrid(x, y);
+                    this.score += 1;
+                }
+    }
+
     addOnGrid(fruit, x, y) {
         if(this.grid[y][x] !== undefined)
             throw 'Something';
         this.grid[y][x] = fruit;
         this.fruits.push(fruit);
         fruit.setPosition(40 * x + (y % 2 ? 40 : 20), 20 + 34 * y);
+
+        // this.checkGroups(x, y, fruit);
+        // this.checkOrphans();
         return true;
     }
 
@@ -111,9 +167,12 @@ class Board {
         return this.addOnGrid(fruit, ...pos);
     }
 
-    remove(fruit) {
+    removeFromGrid(x, y) {
+        // console.log(x, y)
+        let fruit = this.grid[y][x];
+        this.grid[y][x] = undefined;
         this.fruits.splice(this.fruits.indexOf(fruit), 1);
-        // TODO remove from grid
+        fruit.destroy();
     }
 }
 
@@ -123,16 +182,16 @@ class Fruit {
     FLY_SPEED = 500;
 
     constructor(x, y, type) {
+        this.type = type;
         this.el = document.createElement('div');
         this.el.className = 'fruit fruit-' + type;
         this.setPosition(x, y);
         MAIN.appendChild(this.el);
     }
 
-    
     destroy(animate=true) {
         let el = this.el;
-        BOARD.remove(this);
+        // BOARD.remove(this);
 
         if(animate) {
             el.classList.add('falling');
@@ -176,7 +235,7 @@ class Fruit {
                 ts[i] = Infinity;
 
         let min_t = Math.min(...ts);
-        console.log(min_t);
+        // console.log(min_t);
 
         this.setPosition(this.x + dx * min_t, this.y + dy * min_t);
 
@@ -263,9 +322,9 @@ class Gun {
                 if(!BOARD.add(this.fruit)) {
                     this.destroy();
                 } else {
-                    // BOARD.add(this.fruit);
                     this.fruit.setRotating(false);
-                    // this.fruit.destroy();
+                    BOARD.checkGroups(this.fruit);
+                    BOARD.checkOrphans();
                     this.fruit = null;
                     this.state = 'FREE';
                 }
@@ -292,13 +351,12 @@ function step(timestamp) {
         last_timestamp = timestamp;
         if(!GUN_1.fruit)
             GUN_1.setFruit(new Fruit(0, 0, random_fruit()))
-        // GUN_1.setAngle(2 * Math.random() - 1.0);
         GUN_1.update();
 
-        // console.log('step', timestamp);
         if(!GUN_2.fruit)
             GUN_2.setFruit(new Fruit(0, 0, random_fruit()))
         GUN_2.update();
+
         BOARD.setHUD();
     }
     window.requestAnimationFrame(step);
@@ -314,7 +372,7 @@ function keypress(event){
 
 
 function random_fruit() {
-    return FRUITS[parseInt(Math.random() * FRUITS.length)];
+    return FRUITS[Math.floor(Math.random() * FRUITS.length)];
 }
 
 function init() {
@@ -327,12 +385,20 @@ function init() {
     BOARD = new Board();
 
     // BOARD.sampleBoard();
+    // BOARD.loadBoard([
+    //     "0 0 0 0 0 0 0 0",
+    //     " 1 1 1 1 1 1 1 ",
+    //     "2 2 2 2 2 2 2 2",
+    //     " 3 3 3   3 3 3 ",
+    //     "4 4 4 4 4 4 4 4"
+    // ])
+
     BOARD.loadBoard([
-        "0 0 0 0 0 0 0 0",
-        " 1 1 1 1 1 1 1 ",
-        "2 2 2 2 2 2 2 2",
-        " 3 3 3   3 3 3 ",
-        "4 4 4 4 4 4 4 4"
+        "0 1 2 3 4 0 1 2",
+        " 2 3 4 0 1 2 3 ",
+        "3 4 0 1 2 3 4 0",
+        " 0 1 2 3 4 0 1 ",
+        "1 2 3 4 0 1 2 3",
     ])
 
     window.requestAnimationFrame(step);
