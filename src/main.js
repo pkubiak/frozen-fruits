@@ -1,18 +1,57 @@
+const CONTROLS = ['KeyZ', 'KeyM', 'KeyP', 'Enter'];
+
 let BOARD, MAIN, FPS = 100, GUN_1, GUN_2;
 
+class Game {
+    loadLevel(level) {
+
+
+        this.board = new Board();
+    }
+
+
+}
+
 class Board {
-    constructor() {
+    static HEIGHT = 14
+    static WIDTH = 8
+    last_timestamp = null;
+
+    constructor() {       
         this.startTime = (new Date()).getTime();
         this.score = 0;
-        this.level = 'Fruit Salad (hard)';
+        this.level_name = '';
+
         this.time = 0;
         this.setHUD();
+
         this.fruits = [];
         this.grid = [];
+        this.guns = [];
 
-        for(let y=0;y<14;y++) {
-            this.grid.push(new Array(8));
+        for(let y=0;y<Board.HEIGHT;y++) {
+            this.grid.push(new Array(y % 2 ? Board.WIDTH - 1 : Board.WIDTH));
         }
+    }
+
+    update(timestamp) {
+        if(!this.last_timestamp || timestamp - this.last_timestamp > 1000 / FPS) {
+            this.last_timestamp = timestamp;
+            for(let gun of this.guns) {
+                if(!gun.fruit)
+                    gun.setFruit(new Fruit(0, 0, random_fruit()))
+                gun.update();
+            }
+            BOARD.setHUD();
+        }
+    }
+
+    keypress(event) {
+        console.log(this.guns);
+        for(let gun of this.guns)
+            if(event.code == gun.fireKey)
+                gun.fire();
+        console.log(event);
     }
 
     setHUD() {       
@@ -25,23 +64,25 @@ class Board {
         document.querySelector('#hud_time').innerText = m.padStart(2, '0') + ':' + s.padStart(2, '0'); 
 
         // Update level
-        document.querySelector('#hud_level').innerText = this.level;
+        document.querySelector('#hud_level').innerText = this.level_name;
     }
+    
+    // sampleBoard() {
+    //     for(let y=0;y<6;y++)
+    //         for(let x=0;x<(y%2?7:8);x++)
+    //             this.addOnGrid(new Fruit(0, 0, random_fruit()), x, y);
+    // }
 
-    sampleBoard() {
-        for(let y=0;y<6;y++)
-            for(let x=0;x<(y%2?7:8);x++)
-                this.addOnGrid(new Fruit(0, 0, random_fruit()), x, y);
-    }
+    loadLevel(level) {
+        let board = level.board;
+        this.level_name = level.name + ' (' + level.diff + ')';
 
-    loadBoard(board) {
-        if(board.length > 14)
-            throw 'Something other';
+        if(board.length > BOARD.HEIGHT)
+            throw 'Board is too large!';
 
         for(let y=0;y<board.length;y++)
             for(let x=y%2;x<board[y].length;x+=2) {
                 if((x>>1) >= (y % 2 ? 7 : 8)) {
-                    // console.log(x, y, x>>1);
                     throw "Too many fruits in row";
                 }
                 if(board[y][x] == ' ')
@@ -52,6 +93,12 @@ class Board {
                 else type = FRUITS[parseInt(board[y][x])];
                 this.addOnGrid(new Fruit(0, 0, type), x>>1, y);
             }
+
+        for(let i=0;i<level.players.length;i++) {
+            let player = level.players[i];
+            let gun = new Gun(player.x, player.y, player.speed || 1.0, CONTROLS[i]);
+            this.guns.push(gun);
+        }
     }
 
     checkCollisionDistance(fruit) {
@@ -81,13 +128,17 @@ class Board {
         return best;
     }
 
+    /* Find the closest grid point to the given fruit */
     snapToGrid(fruit) {
+        
         let best = Infinity, best_pos = null;
-        for(let y=0;y<14;y++) 
-            for(let x=0;x<(y%2?7:8);x++)
+
+        for(let y = 0;y < this.grid.length; y++) 
+            for(let x = 0;x <this.grid[y].length;x++)
                 if(this.grid[y][x] === undefined) {
                     let cx = 40*x+(y%2?40:20), cy = 20 + 34*y;
                     let dist = Math.hypot(fruit.x - cx, fruit.y - cy);
+
                     if(dist < best) {
                         best = dist;
                         best_pos = [x, y];
@@ -142,11 +193,12 @@ class Board {
             }
             this.score += count * count;
         }
-        // console.log('checkGroups:', count);
     }
 
     checkOrphans() {
         let visited = {};
+
+        // attach to top line
         for(let x=0;x<8;x++)
             this.dfs(x, 0, visited, undefined, true);
         
@@ -166,13 +218,12 @@ class Board {
 
     addOnGrid(fruit, x, y) {
         if(this.grid[y][x] !== undefined)
-            throw 'Something';
+            throw 'Grid already occupied!';
+
         this.grid[y][x] = fruit;
         this.fruits.push(fruit);
         fruit.setPosition(40 * x + (y % 2 ? 40 : 20), 20 + 34 * y);
 
-        // this.checkGroups(x, y, fruit);
-        // this.checkOrphans();
         return true;
     }
 
@@ -196,7 +247,8 @@ class Board {
 FRUITS = ['strawberry', 'orange', 'pear', 'watermelon', 'bannana'];
 
 class Fruit {
-    FLY_SPEED = 500;
+    static FLY_SPEED = 500;
+    static RADIUS = 20;
 
     constructor(x, y, type) {
         this.type = type;
@@ -208,7 +260,6 @@ class Fruit {
 
     destroy(animate=true) {
         let el = this.el;
-        // BOARD.remove(this);
 
         if(animate) {
             el.classList.add('falling');
@@ -229,22 +280,19 @@ class Fruit {
 
     setRotating(yesno) {
         this.el.classList[yesno ? 'add' : 'remove']('rotating');
-        // if(yesno)this.el.classList.add('rotating');
-        // else this.el.classList.remove('rotating');
     }
 
     fly(distance=1.0) {
         if(this.direction === null)
             return false;
 
-        // this.FLY_SPEED  / FPS;
         let dx = Math.sin(this.direction);
         let dy = -Math.cos(this.direction);
         let ts = [
-            (this.direction < 0 ? (this.x - 20) / dx : (300 - this.x) / dx),
-            (this.y - 20) / dy,
-            BOARD.checkCollisionDistance(this),
-            this.FLY_SPEED / FPS
+            (this.direction < 0 ? (this.x - 20) / dx : (300 - this.x) / dx), // check bouncing from left/right wall
+            (this.y - 20) / dy, // check collision with top wall
+            BOARD.checkCollisionDistance(this), // check collision with other fruits
+            Fruit.FLY_SPEED / FPS // free fly
         ];
 
         for(let i=0;i<4;i++)
@@ -252,7 +300,6 @@ class Fruit {
                 ts[i] = Infinity;
 
         let min_t = Math.min(...ts);
-        // console.log(min_t);
 
         this.setPosition(this.x + dx * min_t, this.y + dy * min_t);
 
@@ -272,7 +319,7 @@ class Fruit {
 
 
 class Gun {
-    MAX_ANGLE = 60;
+    static MAX_ANGLE = 60;
 
     constructor(x, y, speed=1.0, fireKey=undefined) {
         this.state = 'FREE';
@@ -304,7 +351,7 @@ class Gun {
 
     setAngle(angle) {
         this.angle = angle;
-        this.el.style.transform = 'translate(-50%, -100%) rotate(' + (this.MAX_ANGLE * angle) + 'deg)';
+        this.el.style.transform = 'translate(-50%, -100%) rotate(' + (Gun.MAX_ANGLE * angle) + 'deg)';
     }
 
     destroy() {
@@ -356,35 +403,9 @@ class Gun {
             console.log('Fire!');
             
             this.fruit.setRotating(true);
-            this.fruit.direction = 2.0 * Math.PI * (this.angle * this.MAX_ANGLE) / 360.0; // direction in radians
+            this.fruit.direction = 2.0 * Math.PI * (this.angle * Gun.MAX_ANGLE) / 360.0; // direction in radians
         }
     }
-}
-
-let last_timestamp = null;
-
-function step(timestamp) {
-    if(!last_timestamp || timestamp - last_timestamp > 1000 / FPS) {
-        last_timestamp = timestamp;
-        if(!GUN_1.fruit)
-            GUN_1.setFruit(new Fruit(0, 0, random_fruit()))
-        GUN_1.update();
-
-        if(!GUN_2.fruit)
-            GUN_2.setFruit(new Fruit(0, 0, random_fruit()))
-        GUN_2.update();
-
-        BOARD.setHUD();
-    }
-    window.requestAnimationFrame(step);
-}
-
-function keypress(event){ 
-    if(event.code == GUN_1.fireKey)
-        GUN_1.fire();
-    if(event.code == GUN_2.fireKey)
-        GUN_2.fire();
-    console.log(event);
 }
 
 
@@ -395,32 +416,44 @@ function random_fruit() {
 function init() {
     MAIN = document.getElementById('board');
 
-    GUN_1 = new Gun(100, 500, 2.0 + 0.2 * (Math.random() - 0.5), 'KeyZ');
-
-    GUN_2 = new Gun(220, 500, 2.0 + 0.2 * (Math.random() - 0.5), 'KeyM');
-
     BOARD = new Board();
 
+    document.onkeypress = (event) => BOARD.keypress(event);
     // BOARD.sampleBoard();
-    BOARD.loadBoard([
-        "0 0 0 0 0 0 0 0",
-        " 1 1 1 1 1 1 1 ",
-        "2 2 2 2 2 2 2 2",
-        " 3 3 3   3 3 3 ",
-        "4 4 4 4 4 4 4 4",
-        " x x       x x ",
-        "x             x",
-    ])
 
-    // BOARD.loadBoard([
-    //     "0 1 2 3 4 0 1 2",
-    //     " 2 3 4 0 1 2 3 ",
-    //     "3 4 0 1 2 3 4 0",
-    //     " 0 1 2 3 4 0 1 ",
-    //     "x 2 3 4 0 1 2 x",
-    //     " x x       x x ",
-    //     "x             x",
-    // ])
+    let fruit_salad = {
+        name: 'Fruit Salad',
+        diff: 'hard',
+        author: 'pkubiak',
+        players: [
+            {x: 100, y: 500, speed: 1.0},
+            {x: 220, y: 500, speed: 2.0},
+        ],
+        // board: [
+        //     "0 0 0 0 0 0 0 0",
+        //     " 1 1 1 1 1 1 1 ",
+        //     "2 2 2 2 2 2 2 2",
+        //     " 3 3 3   3 3 3 ",
+        //     "4 4 4 4 4 4 4 4",
+        //     " x x       x x ",
+        //     "x             x",
+        // ]
+        board: [
+            "0 1 2 3 4 0 1 2",
+            " 2 3 4 0 1 2 3 ",
+            "3 4 0 1 2 3 4 0",
+            " 0 1 2 3 4 0 1 ",
+            "x 2 3 4 0 1 2 x",
+            " x x       x x ",
+            "x             x",
+        ]
+    }
+    BOARD.loadLevel(fruit_salad);
 
-    window.requestAnimationFrame(step);
+    let loop = function(timestamp) {
+        BOARD.update(timestamp);
+        window.requestAnimationFrame(loop);
+    }
+
+    window.requestAnimationFrame(loop);
 }
