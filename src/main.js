@@ -47,7 +47,11 @@ class Board {
                 }
                 if(board[y][x] == ' ')
                     continue;
-                this.addOnGrid(new Fruit(0, 0, FRUITS[parseInt(board[y][x])]), x>>1, y);
+                let type;
+                if(board[y][x] == 'x')
+                    type = 'frozen';
+                else type = FRUITS[parseInt(board[y][x])];
+                this.addOnGrid(new Fruit(0, 0, type), x>>1, y);
             }
     }
 
@@ -94,7 +98,7 @@ class Board {
         return (best > 25 ? null : best_pos);
     }
 
-    dfs(x, y, visited={}, type=undefined) {
+    dfs(x, y, visited={}, type=undefined, upward=true) {
         if(x < 0 || y < 0 || y >= this.grid.length || x >= (y % 2 ? 7 : 8))
             return false;
         if((x + '_' + y) in visited)
@@ -105,11 +109,18 @@ class Board {
             return false;
         visited[x + '_' + y] = true;
 
-        let dirs = (y % 2) ? [[-1, 0], [1, 0], [1, -1], [0, -1], [1, 1], [0, 1]] : [[-1, 0], [1, 0], [-1, -1], [0, -1], [-1, 1], [0, 1]];
+        let dirs = (y % 2) ? [[1, 1], [0, 1]] : [[-1, 1], [0, 1]];
+        if(upward) {
+            for(let i=0;i<2;i++)
+                dirs.push([dirs[i][0], -dirs[i][1]]);
+            dirs.push([-1, 0]);
+            dirs.push([1, 0]);
+        }
+        
 
-        for(let i=0;i<6;i++) {
-            let x2 = x + dirs[i][0], y2 = y + dirs[i][1];
-            this.dfs(x2, y2, visited, type);
+        for(let dir of dirs) {
+            let x2 = x + dir[0], y2 = y + dir[1];
+            this.dfs(x2, y2, visited, type, upward);
         }
     }
 
@@ -138,10 +149,16 @@ class Board {
         let visited = {};
         for(let x=0;x<8;x++)
             this.dfs(x, 0, visited);
+        
+        // attach to frozen fruits
+        for(let y=1;y<this.grid.length;y++)
+            for(let x=0;x<this.grid[y].length;x++)
+                if(this.grid[y][x] !== undefined && this.grid[y][x].type == 'frozen')
+                    this.dfs(x, y, visited, undefined, false);
 
         for(let y=0;y<this.grid.length;y++)
             for(let x=0;x<this.grid[y].length;x++)
-                if(this.grid[y][x] !== undefined && !((x + '_' + y) in visited)) {
+                if(this.grid[y][x] !== undefined && !((x + '_' + y) in visited) && this.grid[y][x].type != 'frozen') {
                     this.removeFromGrid(x, y);
                     this.score += 1;
                 }
@@ -334,7 +351,7 @@ class Gun {
     }
 
     fire() {
-        if(this.state == 'FREE') {
+        if(this.state == 'FREE' && this.fruit) {
             this.state = 'FLY';
             console.log('Fire!');
             
@@ -385,21 +402,25 @@ function init() {
     BOARD = new Board();
 
     // BOARD.sampleBoard();
-    // BOARD.loadBoard([
-    //     "0 0 0 0 0 0 0 0",
-    //     " 1 1 1 1 1 1 1 ",
-    //     "2 2 2 2 2 2 2 2",
-    //     " 3 3 3   3 3 3 ",
-    //     "4 4 4 4 4 4 4 4"
-    // ])
-
     BOARD.loadBoard([
-        "0 1 2 3 4 0 1 2",
-        " 2 3 4 0 1 2 3 ",
-        "3 4 0 1 2 3 4 0",
-        " 0 1 2 3 4 0 1 ",
-        "1 2 3 4 0 1 2 3",
+        "0 0 0 0 0 0 0 0",
+        " 1 1 1 1 1 1 1 ",
+        "2 2 2 2 2 2 2 2",
+        " 3 3 3   3 3 3 ",
+        "4 4 4 4 4 4 4 4",
+        " x x       x x ",
+        "x             x",
     ])
+
+    // BOARD.loadBoard([
+    //     "0 1 2 3 4 0 1 2",
+    //     " 2 3 4 0 1 2 3 ",
+    //     "3 4 0 1 2 3 4 0",
+    //     " 0 1 2 3 4 0 1 ",
+    //     "x 2 3 4 0 1 2 x",
+    //     " x x       x x ",
+    //     "x             x",
+    // ])
 
     window.requestAnimationFrame(step);
 }

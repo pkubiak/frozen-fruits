@@ -81,6 +81,13 @@ body {
     background-image: url('gfx/watermelon.png');
     border-color: #058e48;
 }
+
+.fruit-frozen {
+    background-image: url('gfx/snowflake.png');
+    border-color: black;
+    background-color: black;
+}
+
 .rotating {
     animation-name: rotating;
     animation-duration: 1s;
