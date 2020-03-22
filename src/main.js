@@ -7,6 +7,7 @@ class Board {
         this.level = '1st';
         this.time = 0;
         this.setHUD();
+        this.fruits = [];
     }
 
     setHUD() {       
@@ -25,9 +26,45 @@ class Board {
     sampleBoard() {
         for(let y=0;y<5;y++) {
             for(let x=0;x<(y%2?7:8);x++) {
-                new Fruit(40*x+(y%2?40:20), 20 + 34*y, random_fruit());
+                let fruit = new Fruit(40*x+(y%2?40:20), 20 + 34*y, random_fruit());
+                this.add(fruit);
             }
         }
+    }
+
+    checkCollisionDistance(fruit) {
+        let best = Infinity;
+        let dx = Math.sin(fruit.direction), dy = -Math.cos(fruit.direction);
+
+        for(let obj of this.fruits) {
+            let vx = obj.x - fruit.x, vy = obj.y - fruit.y, vv = Math.hypot(vx, vy);
+
+            let dot = (dx*vx + dy*vy) / 1.0;
+            let ux = dx * dot, uy = dy * dot;
+
+            let min_dist = Math.hypot(fruit.x + ux - obj.x, fruit.y + uy - obj.y);
+            if(min_dist > 40)
+                continue;
+            let ddist = Math.sqrt(40*40 - min_dist*min_dist);
+
+            let t0 = dot - ddist, t1 = dot + ddist;
+            if(t0 <= 0.0 && t1 >= 0.0) {
+                console.log(t0, t1, dot, ddist, min_dist);
+                return 0.0;
+            }
+            if(t0 > 0 && t0 < best)
+                best = t0;
+        }
+
+        return best;
+    }
+
+    snapToGrid(fruit) {
+        ;
+    }
+
+    add(fruit) {
+        this.fruits.push(fruit);
     }
 }
 
@@ -59,19 +96,41 @@ class Fruit {
         else this.el.classList.remove('rotating');
     }
 
-    fly() {
-        if(this.direction) {
-            let x = this.x + this.FLY_SPEED * Math.sin(this.direction) / FPS;
-            let y = this.y - this.FLY_SPEED * Math.cos(this.direction) / FPS;
+    fly(distance=1.0) {
+        if(this.direction === null)
+            return false;
 
-            if(x < 20) {x = 20; this.direction *= -1;}
-            if(x > 300) {x = 300; this.direction *= -1;}
-            if(y < 20) {y = 20; this.direction = null;}
+        // this.FLY_SPEED  / FPS;
+        let dx = Math.sin(this.direction);
+        let dy = -Math.cos(this.direction);
+        let ts = [
+            (this.direction < 0 ? (this.x - 20) / dx : (300 - this.x) / dx),
+            (this.y - 20) / dy,
+            BOARD.checkCollisionDistance(this),
+            this.FLY_SPEED / FPS
+        ];
 
-            this.setPosition(x, y);
+        for(let i=0;i<4;i++)
+            if(ts[i] < 0)
+                ts[i] = Infinity;
 
+        let min_t = Math.min(...ts);
+        console.log(min_t);
+
+        this.setPosition(this.x + dx * min_t, this.y + dy * min_t);
+
+        if(ts[1] == min_t || ts[2] == min_t) {
+            this.direction = null;
+            BOARD.snapToGrid(this);
+            return false;
         }
-        return !!this.direction;
+
+        if(ts[0] == min_t) {
+            this.direction *= -1;
+            return this.fly(distance - min_t);
+        }
+
+        return true;
     }
 }
 
@@ -93,7 +152,7 @@ class Gun {
         this.el.style.left = x + 'px';
         this.el.style.top = y + 'px';
 
-        this.setAngle(0);
+        this.setAngle(0.0);
         
         MAIN.appendChild(this.el);
         this.setFruit(null);
@@ -127,9 +186,12 @@ class Gun {
                 }
             }
             this.setAngle(angle);
+            // this.setAngle(0.1);
         } else 
         if(this.state == 'FLY') {
+            // console.log(this.angle);
             if(!this.fruit.fly()) {
+                BOARD.add(this.fruit);
                 this.fruit.setRotating(false);
                 this.fruit = null;
                 this.state = 'FREE';
