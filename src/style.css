@@ -14,7 +14,9 @@ body {
     margin: 0;
     padding: 0;
     background: url(https://images.photowall.com/products/52980/green-leaves-background.jpg?h=699&q=85);
+    /* background: url(https://media.npr.org/assets/img/2013/06/04/istock_000019329595large_wide-623c2cb4aeadba78334e87806b3fb0ab5c7f1764.jpg); */
     background-size: cover;;
+    font-family: 'Share Tech Mono', monospace;
 }
 
 #board {
@@ -107,8 +109,6 @@ body {
     z-index: 200;
 }
 
-
-
 .gun {
     z-index: 190;
     position: absolute;
@@ -120,7 +120,6 @@ body {
     width: 20px;
     height: 60px;
     background: url('gfx/arrow.png') center center no-repeat;;
-    /* background-color: red; */
     background-size: 100% 100%;
 }
 
@@ -166,10 +165,20 @@ display: flex;
 
 nav ul li {
     flex: 1 0;
-    width: 33%;
+    /* width: 50%; */
     padding: 0;
     margin: 0;
     font-weight: bold;
     text-align: center;
     text-transform: uppercase;;
+    font-size: 18pt;
+    line-height: 150%;
+}
+
+#hud_level {
+    display: block;
+    background: white;
+    color: #999;
+    padding-bottom: 8px;
+    text-align: center;
 }

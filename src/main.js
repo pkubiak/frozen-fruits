@@ -4,7 +4,7 @@ class Board {
     constructor() {
         this.startTime = (new Date()).getTime();
         this.score = 0;
-        this.level = '1st';
+        this.level = 'Fruit Salad (hard)';
         this.time = 0;
         this.setHUD();
         this.fruits = [];
