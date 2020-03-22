@@ -13,7 +13,6 @@ class Board {
         for(let y=0;y<14;y++) {
             this.grid.push(new Array(8));
         }
-        console.log(this.grid);
     }
 
     setHUD() {       
@@ -110,6 +109,7 @@ class Board {
         visited[x + '_' + y] = true;
 
         let dirs = (y % 2) ? [[1, 1], [0, 1]] : [[-1, 1], [0, 1]];
+
         if(upward) {
             for(let i=0;i<2;i++)
                 dirs.push([dirs[i][0], -dirs[i][1]]);
@@ -132,7 +132,7 @@ class Board {
         }
 
         let visited = {};
-        this.dfs(x, y, visited, this.grid[y][x].type);
+        this.dfs(x, y, visited, this.grid[y][x].type, true);
         let count = Object.keys(visited).length;
 
         if(count >= 3) {
@@ -148,7 +148,7 @@ class Board {
     checkOrphans() {
         let visited = {};
         for(let x=0;x<8;x++)
-            this.dfs(x, 0, visited);
+            this.dfs(x, 0, visited, undefined, true);
         
         // attach to frozen fruits
         for(let y=1;y<this.grid.length;y++)
