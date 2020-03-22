@@ -60,7 +60,18 @@ class Board {
     }
 
     snapToGrid(fruit) {
-        ;
+        let best = Infinity, best_pos = null;
+        for(let y=0;y<14;y++) {
+            for(let x=0;x<(y%2?7:8);x++) {
+                let pos = [40*x+(y%2?40:20), 20 + 34*y];
+                let dist = Math.hypot(fruit.x - pos[0], fruit.y - pos[1]);
+                if(dist < best) {
+                    best = dist;
+                    best_pos = pos;
+                }
+            }
+        }
+        fruit.setPosition(best_pos[0], best_pos[1]);
     }
 
     add(fruit) {
