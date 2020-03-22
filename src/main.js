@@ -35,9 +35,21 @@ class Board {
                 this.addOnGrid(new Fruit(0, 0, random_fruit()), x, y);
     }
 
-    // loadFromString(text) {
-    //     let lines = '';
-    // }
+    loadBoard(board) {
+        if(board.length > 14)
+            throw 'Something other';
+
+        for(let y=0;y<board.length;y++)
+            for(let x=y%2;x<board[y].length;x+=2) {
+                if((x>>1) >= (y % 2 ? 7 : 8)) {
+                    console.log(x, y, x>>1);
+                    throw "Too many fruits in row";
+                }
+                if(board[y][x] == ' ')
+                    continue;
+                this.addOnGrid(new Fruit(0, 0, FRUITS[parseInt(board[y][x])]), x>>1, y);
+            }
+    }
 
     checkCollisionDistance(fruit) {
         let best = Infinity;
@@ -314,14 +326,14 @@ function init() {
 
     BOARD = new Board();
 
-    BOARD.sampleBoard();
-    // BOARD.loadFromString([
-    //     "0 0 0 0 0 0 0 0",
-    //     " 1 1 1 1 1 1 1 ",
-    //     "2 2 2 2 2 2 2 2",
-    //     " 3 3 3 3 3 3 3 ",
-    //     "4 4 4 4 4 4 4 4"
-    // ])
+    // BOARD.sampleBoard();
+    BOARD.loadBoard([
+        "0 0 0 0 0 0 0 0",
+        " 1 1 1 1 1 1 1 ",
+        "2 2 2 2 2 2 2 2",
+        " 3 3 3   3 3 3 ",
+        "4 4 4 4 4 4 4 4"
+    ])
 
     window.requestAnimationFrame(step);
 }
