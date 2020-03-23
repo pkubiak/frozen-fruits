@@ -45,6 +45,26 @@ const LEVELS = [
             "x             x",
         ]
     },
+    {
+        name: 'Double-slit Young Fruit',
+        diff: 'hard',
+        author: 'pkubiak',
+        players: [
+            {x: 100, y: 500, speed: 1.0},
+            {x: 220, y: 500, speed: 2.0},
+        ],
+        board: [
+            "1 1 1 1 2 2 2 2",
+            " 1 1 1 3 2 2 2 ",
+            "  1 1 3 3 2 2  ",
+            "   1 3 3 3 2   ",
+            "      3 3      ",
+            "       3       ",
+            "               ",
+            "               ",
+            "x     x x     x",
+        ]
+    },
     // From: https://github.com/kthakore/frozen-bubble/blob/master/share/data/levels
     {
         "name": "Level 1",

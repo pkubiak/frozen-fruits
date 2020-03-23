@@ -426,7 +426,7 @@ function createLevelsList() {
 
         for(let level of levels) {
             let tr = document.createElement('tr');
-            tr.innerHTML = `<td style="width:100%"><a href="#" class="stretched">${level.name}</a> (${level.players.length}×☺)<br/><small>author: ${level.author}</small></td><td>01:23</td>`;
+            tr.innerHTML = `<td style="width:100%"><a href="#" class="stretched">${level.name}</a> (${level.players.length}×☺)<br/><small>author: ${level.author}</small></td><td></td>`;
             tr.querySelector('a').addEventListener('click', () => init_game(level));
             table.appendChild(tr);
         }
