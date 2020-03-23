@@ -1,20 +1,18 @@
 const CONTROLS = ['KeyZ', 'KeyM', 'KeyP', 'Enter'];
 
-let BOARD, MAIN, FPS = 100, GUN_1, GUN_2;
+let BOARD, MAIN, FPS = 100;
 
-class Game {
-    loadLevel(level) {
-
-
-        this.board = new Board();
-    }
+// class Game {
+//     loadLevel(level) {
 
 
-}
+//         this.board = new Board();
+//     }
+
+
+// }
 
 class Board {
-    static HEIGHT = 14
-    static WIDTH = 8
     last_timestamp = null;
 
     constructor() {       
@@ -66,7 +64,7 @@ class Board {
         // Update level
         document.querySelector('#hud_level').innerText = this.level_name;
     }
-    
+
     // sampleBoard() {
     //     for(let y=0;y<6;y++)
     //         for(let x=0;x<(y%2?7:8);x++)
@@ -85,7 +83,7 @@ class Board {
                 if((x>>1) >= (y % 2 ? 7 : 8)) {
                     throw "Too many fruits in row";
                 }
-                if(board[y][x] == ' ')
+                if(board[y][x] == '-')
                     continue;
                 let type;
                 if(board[y][x] == 'x')
@@ -244,12 +242,12 @@ class Board {
     }
 }
 
+Board.HEIGHT = 14;
+Board.WIDTH = 8;
+
 FRUITS = ['strawberry', 'orange', 'pear', 'watermelon', 'bannana'];
 
 class Fruit {
-    static FLY_SPEED = 500;
-    static RADIUS = 20;
-
     constructor(x, y, type) {
         this.type = type;
         this.el = document.createElement('div');
@@ -316,11 +314,10 @@ class Fruit {
         return true;
     }
 }
-
+Fruit.FLY_SPEED = 500;
+Fruit.RADIUS = 20;
 
 class Gun {
-    static MAX_ANGLE = 60;
-
     constructor(x, y, speed=1.0, fireKey=undefined) {
         this.state = 'FREE';
 
@@ -407,13 +404,46 @@ class Gun {
         }
     }
 }
+Gun.MAX_ANGLE = 60;
+
 
 
 function random_fruit() {
     return FRUITS[Math.floor(Math.random() * FRUITS.length)];
 }
 
+function createLevelsList() {
+    const view = document.getElementById('levels_list');
+
+    for(let diff of ['easy', 'medium', 'hard', 'original']) {
+        const h2 = document.createElement('h2');
+        h2.innerText = diff;
+        view.appendChild(h2);
+        
+        let levels = LEVELS.filter(level => level.diff == diff);
+
+        const table = document.createElement('table');
+
+        for(let level of levels) {
+            let tr = document.createElement('tr');
+            tr.innerHTML = `<td style="width:100%"><a href="#" class="stretched">${level.name}</a> (${level.players.length}×☺)<br/><small>author: ${level.author}</small></td><td>01:23</td>`;
+            tr.querySelector('a').addEventListener('click', () => init_game(level));
+            table.appendChild(tr);
+        }
+
+        view.appendChild(table);
+    }
+}
+
 function init() {
+    createLevelsList()
+
+}
+
+function init_game(level) {
+    document.getElementById('view_levels').style.display = 'none'
+    document.getElementById('view_board').style.display = 'initial';
+
     MAIN = document.getElementById('board');
 
     BOARD = new Board();
@@ -421,34 +451,7 @@ function init() {
     document.onkeypress = (event) => BOARD.keypress(event);
     // BOARD.sampleBoard();
 
-    let fruit_salad = {
-        name: 'Fruit Salad',
-        diff: 'hard',
-        author: 'pkubiak',
-        players: [
-            {x: 100, y: 500, speed: 1.0},
-            {x: 220, y: 500, speed: 2.0},
-        ],
-        // board: [
-        //     "0 0 0 0 0 0 0 0",
-        //     " 1 1 1 1 1 1 1 ",
-        //     "2 2 2 2 2 2 2 2",
-        //     " 3 3 3   3 3 3 ",
-        //     "4 4 4 4 4 4 4 4",
-        //     " x x       x x ",
-        //     "x             x",
-        // ]
-        board: [
-            "0 1 2 3 4 0 1 2",
-            " 2 3 4 0 1 2 3 ",
-            "3 4 0 1 2 3 4 0",
-            " 0 1 2 3 4 0 1 ",
-            "x 2 3 4 0 1 2 x",
-            " x x       x x ",
-            "x             x",
-        ]
-    }
-    BOARD.loadLevel(fruit_salad);
+    BOARD.loadLevel(level);
 
     let loop = function(timestamp) {
         BOARD.update(timestamp);

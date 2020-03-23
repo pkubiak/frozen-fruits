@@ -4,20 +4,26 @@
 <head>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="src/style.css" />
+    <script src="src/levels.js"></script>
     <script src="src/main.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 </head>
 
 <body onload="javascript:init()">
-<main>
-<span id="hud_level"></span>
-<div id="board"></div>
-<nav>
-<ul>
-<li>Score: <span id="hud_score"></span></li>
-<li>Time: <span id="hud_time"></span></li>
-</ul>
-</nav>
+<main id="view_board" style="display:none">
+    <span id="hud_level"></span>
+    <div id="board"></div>
+    <nav>
+    <ul>
+    <li>Score: <span id="hud_score"></span></li>
+    <li>Time: <span id="hud_time"></span></li>
+    </ul>
+    </nav>
+</main>
+
+<main id="view_levels">
+<h2>Levels</h2>
+<div id="levels_list"></div>
 </main>
 
 </body>

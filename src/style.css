@@ -142,18 +142,18 @@ body {
 
 
 main {
-/* background: red; */
-display: inline-block;
-position: absolute;
-left: 50%; top: 50%;
-transform: translate(-50%, -50%);
+    width: 360px;
+    display: inline-block;
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
 
-/* background: url(https://c8.alamy.com/comp/W2T079/background-of-frozen-berries-top-view-of-raspberries-and-blueberries-W2T079.jpg); */
-background-size: 500px;
-background-position: center center;
-background-repeat: no-repeat;
-border: 10px solid white;
-border-radius: 5px;
+    /* background: url(https://c8.alamy.com/comp/W2T079/background-of-frozen-berries-top-view-of-raspberries-and-blueberries-W2T079.jpg); */
+    background-size: 500px;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border: 10px solid white;
+    border-radius: 5px;
 }
 
 nav {
@@ -188,4 +188,52 @@ nav ul li {
     color: #999;
     padding-bottom: 8px;
     text-align: center;
+}
+
+table {
+    width: 100%;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+table td {
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+}
+
+table:empty::after {
+    content: "There are not levels!";
+}
+
+table tr {
+    position: relative;
+    transform: translate(0,0);
+}
+
+table tr:hover {
+    background: #ddd;
+}
+
+h2 {
+    margin-bottom: 0.25em;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+    font-weight: bold;
+}
+a.stretched::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    /* background: green; */
+}
+
+#view_levels {
+    background: white;
+    height: 622px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
