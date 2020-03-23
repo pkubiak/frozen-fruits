@@ -83,7 +83,7 @@ class Board {
                 if((x>>1) >= (y % 2 ? 7 : 8)) {
                     throw "Too many fruits in row";
                 }
-                if(board[y][x] == '-')
+                if(board[y][x] == ' ')
                     continue;
                 let type;
                 if(board[y][x] == 'x')
@@ -245,7 +245,7 @@ class Board {
 Board.HEIGHT = 14;
 Board.WIDTH = 8;
 
-FRUITS = ['strawberry', 'orange', 'pear', 'watermelon', 'bannana'];
+FRUITS = ['kiwi', 'strawberry', 'cocoa', 'watermelon', 'apple', 'orange', 'lemon', 'cherry']; //, 'bannana'];
 
 class Fruit {
     constructor(x, y, type) {

@@ -48,38 +48,58 @@ body {
     height: 40px;
     position: absolute;
     background: white;
+    background-image: url('gfx/fruits.png');
     background-position: center center;
     background-repeat: no-repeat;
-    background-size: contain;
+    background-size: auto 30px;
     border-radius:100%;
     transform: translate(-50%, -50%);
     box-sizing: border-box;
     border: 5px solid black;
 }
 
+.fruit-kiwi {
+    background-position-x: 0%;
+    border-color: #116c62;
+}
 .fruit-strawberry {
-    background-image: url('gfx/strawberry.png');
+    background-position-x: 12.5%;
     border-color: #cb1602;
 }
 
-.fruit-orange {
-    background-image: url('gfx/orange.png');
-    border-color: #fcb73c;
-}
-
-.fruit-bannana {
-    background-image: url('gfx/bannana.png');
-    border-color: #f9e224;
-}
-
-.fruit-pear {
-    background-image: url('gfx/pear.png');
-    border-color: #adfc92;
+.fruit-cocoa {
+    background-position-x: 25%;
+    border-color: #4a2a03;
 }
 
 .fruit-watermelon {
-    background-image: url('gfx/watermelon.png');
-    border-color: #058e48;
+    background-position-x: 37.5%;
+    border-color: #e55e79;
+}
+
+.fruit-apple {
+    background-position-x: 50%;
+    border-color: #7db579;
+}
+
+.fruit-orange {
+    background-position: 62.5%;
+    border-color: #f7a62c;
+}
+
+.fruit-bannana {
+    background-position: 75%;
+    border-color: #d8ce80;
+}
+
+.fruit-lemon {
+    background-position: 87.55%;
+    border-color: #f7ca2c;
+}
+
+.fruit-cherry {
+    background-position-x: 100%;
+    border-color: #7a334f;
 }
 
 .fruit-frozen {
