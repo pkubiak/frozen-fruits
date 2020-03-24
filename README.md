@@ -19,3 +19,6 @@ Frozen Bubble clone with a lot of fruits! Play at https://pkubiak.github.io/froz
   - [ ] Orphaned fruits doesnt add to score correctly?
   - [ ] Estimate real FPS not use FPS const
 - [ ] Use free background
+- [ ] Help Screen
+- [ ] Add guns customization (fruits types, speed, angle range)
+- [ ] Implement State pattern
