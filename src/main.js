@@ -2,15 +2,49 @@ const CONTROLS = ['KeyZ', 'KeyM', 'KeyP', 'Enter'];
 
 let BOARD, MAIN, FPS = 100;
 
-// class Game {
-//     loadLevel(level) {
+
+class ViewModal {
+    static show(name, params) {
+        const main = document.querySelector('main');
+        main.classList.add('modal');
+
+        const modal = document.querySelector('#view-modal');
+        modal.style.display = 'block';
+
+        const html = ViewModal.templates[name](params);
+        modal.innerHTML = html;
+    }
+
+    static registerTemplate(name, template_fn) {
+        ViewModal.templates[name] = template_fn;
+    }
+}
+ViewModal.templates = {};
+
+ViewModal.registerTemplate('win', function(params) {
+    let html = `
+        <h2>Congratulations</h2>
+        <h3>You win!</h3>
+        <hr/>
+    `;
+    const score = (''+params.score).padStart(5, '0');
+    if(params.highscore)
+        html += '<h3>You have set new highscore!</h3>';
+    else html += '<h3>Your score:</h3>';
+
+    html += `<h1>${score}</h1>`;
+        
+    return html;
+});
+
+ViewModal.registerTemplate('loss', function() {
+    return `
+        <h2>Ha ha ha</h2>
+        <h3>You loss!</h3>
+    `;
+});
 
 
-//         this.board = new Board();
-//     }
-
-
-// }
 
 class Board {
     last_timestamp = null;
@@ -33,6 +67,15 @@ class Board {
     }
 
     update(timestamp) {
+        if(this.allGunsDestroyed()) {
+            ViewModal.show('loss');
+            return false;
+        }
+        if(this.isClear()) {
+            ViewModal.show('win', {score: this.score, highscore: true})
+            return false;
+        }
+
         if(!this.last_timestamp || timestamp - this.last_timestamp > 1000 / FPS) {
             this.last_timestamp = timestamp;
             for(let gun of this.guns) {
@@ -42,6 +85,8 @@ class Board {
             }
             BOARD.setHUD();
         }
+
+        return true;
     }
 
     keypress(event) {
@@ -61,15 +106,8 @@ class Board {
         let m = ('' + parseInt(this.time/60)), s = ('' + parseInt(this.time % 60));
         document.querySelector('#hud_time').innerText = m.padStart(2, '0') + ':' + s.padStart(2, '0'); 
 
-        // Update level
-        document.querySelector('#hud_level').innerText = this.level_name;
+        
     }
-
-    // sampleBoard() {
-    //     for(let y=0;y<6;y++)
-    //         for(let x=0;x<(y%2?7:8);x++)
-    //             this.addOnGrid(new Fruit(0, 0, random_fruit()), x, y);
-    // }
 
     loadLevel(level) {
         let board = level.board;
@@ -97,6 +135,9 @@ class Board {
             let gun = new Gun(player.x, player.y, player.speed || 1.0, CONTROLS[i]);
             this.guns.push(gun);
         }
+
+        // Update level
+        document.querySelector('#hud_level').innerText = this.level_name;
     }
 
     checkCollisionDistance(fruit) {
@@ -239,6 +280,17 @@ class Board {
         this.grid[y][x] = undefined;
         this.fruits.splice(this.fruits.indexOf(fruit), 1);
         fruit.destroy();
+    }
+
+    isClear() {
+        return this.fruits.length == 0;
+    }
+
+    allGunsDestroyed() {
+        for(let gun of this.guns)
+            if(gun.state != 'KILLED')
+                return false;
+        return true;
     }
 }
 
@@ -441,25 +493,27 @@ function createLevelsList() {
 }
 
 function init() {
-    createLevelsList()
+    document.querySelector('main').classList.remove('spinner');
+    document.querySelector('#view-levels').classList.remove('hidden');
+
+    createLevelsList();
 }
 
 function init_game(level) {
-    document.getElementById('view_levels').style.display = 'none'
-    document.getElementById('view_board').style.display = 'initial';
+    document.querySelector('#view-levels').classList.add('hidden');
+    document.querySelector('#view-board').classList.remove('hidden');
 
     MAIN = document.getElementById('board');
 
     BOARD = new Board();
 
     document.onkeypress = (event) => BOARD.keypress(event);
-    // BOARD.sampleBoard();
 
     BOARD.loadLevel(level);
 
     let loop = function(timestamp) {
-        BOARD.update(timestamp);
-        window.requestAnimationFrame(loop);
+        if(BOARD.update(timestamp))
+            window.requestAnimationFrame(loop);
     }
 
     window.requestAnimationFrame(loop);
