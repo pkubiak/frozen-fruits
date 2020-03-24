@@ -373,14 +373,48 @@ main.modal::after {
     display: block;
     
     position: absolute;
-    top: 50%; left: 50%;
+    top: calc(50% - 64px); left: calc(50% - 64px);
 
     width: 128px; height: 128px;
     background: url(gfx/fruits.png);
 
-    animation-name: rotating;
-    animation-duration: 2s;
+    animation-name: spinner;
+    animation-duration: 18s;
     animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
-    animation-direction: alternate;
+    animation-direction: normal;
+}
+
+@keyframes spinner {
+    0.01% {transform: rotate(0deg); opacity: 0; background-position-x: 0.00%}
+    6.25% {transform: rotate(360deg); opacity: 1;}
+    12.50% {transform: rotate(0deg); opacity: 0; background-position-x: 0.00%;}
+    
+    12.51% {transform: rotate(0deg); opacity: 0; background-position-x: 12.50%}
+    18.75% {transform: rotate(360deg); opacity: 1;}
+    25.00% {transform: rotate(0deg); opacity: 0; background-position-x: 12.50%;}
+    
+    25.01% {transform: rotate(0deg); opacity: 0; background-position-x: 25.00%}
+    31.25% {transform: rotate(360deg); opacity: 1;}
+    37.50% {transform: rotate(0deg); opacity: 0; background-position-x: 25.00%;}
+    
+    37.51% {transform: rotate(0deg); opacity: 0; background-position-x: 37.50%}
+    43.75% {transform: rotate(360deg); opacity: 1;}
+    50.00% {transform: rotate(0deg); opacity: 0; background-position-x: 37.50%;}
+    
+    50.01% {transform: rotate(0deg); opacity: 0; background-position-x: 50.00%}
+    56.25% {transform: rotate(360deg); opacity: 1;}
+    62.50% {transform: rotate(0deg); opacity: 0; background-position-x: 50.00%;}
+    
+    62.51% {transform: rotate(0deg); opacity: 0; background-position-x: 62.50%}
+    68.75% {transform: rotate(360deg); opacity: 1;}
+    75.00% {transform: rotate(0deg); opacity: 0; background-position-x: 62.50%;}
+    
+    75.01% {transform: rotate(0deg); opacity: 0; background-position-x: 87.50%}
+    81.25% {transform: rotate(360deg); opacity: 1;}
+    87.50% {transform: rotate(0deg); opacity: 0; background-position-x: 87.50%;}
+    
+    87.51% {transform: rotate(0deg); opacity: 0; background-position-x: 100.00%}
+    93.75% {transform: rotate(360deg); opacity: 1;}
+    100.00% {transform: rotate(0deg); opacity: 0; background-position-x: 100.00%;}
 }
