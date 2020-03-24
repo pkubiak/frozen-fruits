@@ -1,4 +1,39 @@
 const LEVELS = [
+    /*{
+        name: 'Test 1',
+        diff: 'easy',
+        author: 'pkubiak',
+        players: 'default',
+        board: [
+            "               ",
+            " 1 1 1 1 1 1 1 ",
+        ]
+    },
+    {
+        name: 'Test 2',
+        diff: 'easy',
+        author: 'pkubiak',
+        players: [
+            {x: 100, y: 500, speed: 1.0},
+            {x: 220, y: 500, speed: 2.0},
+        ],
+        board: [
+            "1 1 1 1 1 1 1 1",
+            " 1 1 1 1 1 1 1 ",
+            "1 1 1 1 1 1 1 1",
+            " 1 1 1 1 1 1 1 ",
+            "1 1 1 1 1 1 1 1",
+            " 1 1 1 1 1 1 1 ",
+            "1 1 1 1 1 1 1 1",
+            " 1 1 1 1 1 1 1 ",
+            "1 1 1 1 1 1 1 1",
+            " 1 1 1 1 1 1 1 ",
+            "1 1 1 1 1 1 1 1",
+            " 1 1 1 1 1 1 1 ",
+            "1 1 1 1 1 1 1 1",
+            // " 1 1 1 1 1 1 1 ",
+        ]
+    },*/
     {
         name: 'Fruit Salad',
         diff: 'easy',
@@ -1855,10 +1890,18 @@ const LEVELS = [
             "               "
         ]
     }
-]
+];
 
-for(let level of LEVELS) {
-    if(level.players == 'default') {
-        level.players = [{x: 160, y: 500, speed: 2.0}];
+(function() {
+    const levelNames = {};
+
+    for(let level of LEVELS) {
+        if(level.name in levelNames)
+            throw "Duplicated level name!";
+        levelNames[level.name] = true;
+
+        if(level.players == 'default') {
+            level.players = [{x: 160, y: 500, speed: 2.0}];
+        }
     }
-}
+})();

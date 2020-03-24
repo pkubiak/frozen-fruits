@@ -242,6 +242,10 @@ nav ul li {
     background: #df779499;
 }
 
+.table tr.completed {
+    background: #117e5022;
+}
+
 .table tr td:nth-child(1) {
     width:100%
 }
@@ -250,8 +254,12 @@ nav ul li {
     background: red;
 }
 
+.table tr td:nth-child(2) {
+    text-align: right;
+}
+
 .table tr td:nth-child(2):empty::before {
-    content: '01234';
+    content: '-----';
     white-space: nowrap;
     opacity: 0.2;
 }

@@ -2,6 +2,24 @@ const CONTROLS = ['KeyZ', 'KeyM', 'KeyP', 'Enter'];
 
 let BOARD, MAIN, FPS = 100;
 
+class HighScore {
+    static get(name) {
+        let value = window.localStorage.getItem(`score:${name}`);
+        if(value !== null)
+            value = parseInt(value);
+        return value;
+    }
+
+    static set(name, value) {
+        let previous = HighScore.get(name);
+        if(previous === null || previous < value) {
+            window.localStorage.setItem(`score:${name}`, ''+value);
+            return true;
+        }
+        return false;
+    }
+}
+
 
 class ViewModal {
     static show(name, params) {
@@ -72,7 +90,10 @@ class Board {
             return false;
         }
         if(this.isClear()) {
-            ViewModal.show('win', {score: this.score, highscore: true})
+            ViewModal.show('win', {
+                score: this.score,
+                highscore: HighScore.set(this.level_name, this.score)
+            })
             return false;
         }
 
@@ -105,13 +126,11 @@ class Board {
         this.time = ((new Date()).getTime() - this.startTime)/1000.0;
         let m = ('' + parseInt(this.time/60)), s = ('' + parseInt(this.time % 60));
         document.querySelector('#hud_time').innerText = m.padStart(2, '0') + ':' + s.padStart(2, '0'); 
-
-        
     }
 
     loadLevel(level) {
         let board = level.board;
-        this.level_name = level.name + ' (' + level.diff + ')';
+        this.level_name = level.name;
 
         if(board.length > BOARD.HEIGHT)
             throw 'Board is too large!';
@@ -137,7 +156,7 @@ class Board {
         }
 
         // Update level
-        document.querySelector('#hud_level').innerText = this.level_name;
+        document.querySelector('#hud_level').innerText = level.name + ' (' + level.diff + ')';;
     }
 
     checkCollisionDistance(fruit) {
@@ -482,8 +501,22 @@ function createLevelsList() {
 
         for(let level of levels) {
             let tr = document.createElement('tr');
-            let players = level.players.length;//'☺'.repeat(level.players.length);
-            tr.innerHTML = `<td><a href="#" class="stretched players-${players}">${level.name}</a><br/><small>author: ${level.author}</small></td><td></td>`;
+            let players = level.players.length;
+            let bestScore = HighScore.get(level.name);
+
+            if(bestScore !== null) {
+                bestScore = (''+bestScore).padStart(5, '0');
+                tr.classList.add('completed');
+            } else
+                bestScore = '';
+
+            tr.innerHTML = `
+                <td>
+                    <a href="#" class="stretched players-${players}">${level.name}</a><br/>
+                    <small>author: ${level.author}</small>
+                </td>
+                <td>${bestScore}</td>
+            `;
             tr.querySelector('a').addEventListener('click', () => init_game(level));
             table.appendChild(tr);
         }
