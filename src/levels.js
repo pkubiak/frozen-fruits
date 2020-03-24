@@ -1,17 +1,5 @@
 const LEVELS = [
     {
-        name: 'Level 1',
-        diff: 'easy',
-        author: 'Frozen Bubble',
-        players: 'default',
-        board: [
-            "0 0 1 1 2 2 3 3",
-            " 0 0 1 1 2 2 3 ",
-            "2 2 3 3 0 0 1 1",
-            " 2 3 3 0 0 1 1 ",
-        ]
-    },
-    {
         name: 'Fruit Salad',
         diff: 'easy',
         author: 'pkubiak',

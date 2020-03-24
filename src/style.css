@@ -210,40 +210,86 @@ nav ul li {
     text-align: center;
 }
 
-table {
+.table {
     width: 100%;
     border-spacing: 0;
     border-collapse: collapse;
 }
 
-table td {
+.table td {
     border-top: 1px solid #aaa;
     border-bottom: 1px solid #aaa;
-    padding-left: 8px;
+    padding: 8px;
 }
 
-table:empty::after {
+.table:empty::after {
     content: "There are not levels!";
 }
 
-table tr {
+.table tr {
     position: relative;
     transform: translate(0,0);
 }
 
-table tr:hover {
+.table tr:hover {
     background: #b8e50699;
+}
+
+.table tr td:nth-child(1) {
+    width:100%
+}
+.table tr td:nth-child(1) span {
+    letter-spacing: -4px;
+    background: red;
+}
+
+.table tr td:nth-child(2):empty::before {
+    content: '--:--';
+    white-space: nowrap;
+    opacity: 0.2;
 }
 
 h2 {
     margin-bottom: 0.25em;
 }
 
+.clickable::after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    /* background: rgba(255,0,0,0.4); */
+    width: 60px; height: 60px;
+    cursor: pointer;
+    border-radius: 100%;
+}
+
 a {
     color: black;
     text-decoration: none;
     font-weight: bold;
+    /* position: relative; */
+    /* background: green; */
 }
+
+a.players-1::after, a.players-2::after, a.players-3::after, a.players-4::after {
+    /* position: absolute; */
+    letter-spacing: -0.3em;
+    font-size: 1.25em;
+    margin-left: 0.25em;
+    /* left: 100%; */
+    white-space: nowrap;
+    /* top: 50%; */
+    /* transform: translate(0, -55%); */
+    /* background: red; */
+}
+
+a.players-1::after {content: "☺";}
+a.players-2::after {content: "☺☺";}
+a.players-3::after {content: "☺☺☺";}
+a.players-4::after {content: "☺☺☺☺";}
+
 a.stretched::before {
     content: "";
     position: absolute;

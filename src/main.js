@@ -336,6 +336,8 @@ class Gun {
         
         MAIN.appendChild(this.el);
         this.setFruit(null);
+
+        this.callback = () => this.fire();
     }
 
     setFruit(fruit) {
@@ -343,6 +345,8 @@ class Gun {
         if(fruit) {
             fruit.setPosition(this.x, this.y);
             fruit.el.classList.add('resting');
+            fruit.el.addEventListener('click', this.callback);
+            this.fruit.el.classList.add('clickable');
         }
     }
 
@@ -398,15 +402,14 @@ class Gun {
         if(this.state == 'FREE' && this.fruit) {
             this.state = 'FLY';
             console.log('Fire!');
-            
+            this.fruit.el.removeEventListener('click', this.callback);
+            this.fruit.el.classList.remove('clickable');
             this.fruit.setRotating(true);
             this.fruit.direction = 2.0 * Math.PI * (this.angle * Gun.MAX_ANGLE) / 360.0; // direction in radians
         }
     }
 }
 Gun.MAX_ANGLE = 60;
-
-
 
 function random_fruit() {
     return FRUITS[Math.floor(Math.random() * FRUITS.length)];
@@ -423,10 +426,12 @@ function createLevelsList() {
         let levels = LEVELS.filter(level => level.diff == diff);
 
         const table = document.createElement('table');
+        table.className = 'table';
 
         for(let level of levels) {
             let tr = document.createElement('tr');
-            tr.innerHTML = `<td style="width:100%"><a href="#" class="stretched">${level.name}</a> (${level.players.length}×☺)<br/><small>author: ${level.author}</small></td><td></td>`;
+            let players = level.players.length;//'☺'.repeat(level.players.length);
+            tr.innerHTML = `<td><a href="#" class="stretched players-${players}">${level.name}</a><br/><small>author: ${level.author}</small></td><td></td>`;
             tr.querySelector('a').addEventListener('click', () => init_game(level));
             table.appendChild(tr);
         }
@@ -437,7 +442,6 @@ function createLevelsList() {
 
 function init() {
     createLevelsList()
-
 }
 
 function init_game(level) {
