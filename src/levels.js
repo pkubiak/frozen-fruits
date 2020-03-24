@@ -35,6 +35,22 @@ const LEVELS = [
         ]
     },*/
     {
+        name: 'Random Fruit Shake',
+        diff: 'medium',
+        author: 'pkubiak',
+        players: 'default',
+        board: function() {
+            let rows = [];
+            for(let y=0;y<7;y++) {
+                let row = '';
+                for(let x=0;x<15;x++)
+                    row += ((x^y)&1)==0 ? Math.floor(8 * Math.random()) : ' ';
+                rows.push(row);
+            }
+            return rows;
+        }
+    },
+    {
         name: 'Fruit Salad',
         diff: 'easy',
         author: 'pkubiak',

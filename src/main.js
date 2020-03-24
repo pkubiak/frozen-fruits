@@ -129,7 +129,7 @@ class Board {
     }
 
     loadLevel(level) {
-        let board = level.board;
+        let board = (typeof(level.board) == 'function') ? level.board() : level.board;
         this.level_name = level.name;
 
         if(board.length > BOARD.HEIGHT)
