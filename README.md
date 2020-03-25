@@ -27,6 +27,7 @@ Frozen Bubble clone with a lot of fruits! Play at https://pkubiak.github.io/froz
   - [ ] Colliding flying fruits couse one player death
   - [ ] Orphaned fruits doesnt add to score correctly?
   - [ ] Estimate real FPS not use FPS const
+  - [ ] Missing Background Filter in Firefox
 - [ ] Use free background
 - [ ] Help Screen
 - [ ] Add guns customization (fruits types, speed, angle range)
