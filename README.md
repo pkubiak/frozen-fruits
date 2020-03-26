@@ -22,6 +22,6 @@ Frozen Bubble clone with a lot of fruits! Play at https://pkubiak.github.io/froz
 - [x] Win / Loss
 - [x] Gun slowdown on key hold
 - [ ] Use free background
-- [ ] Add guns customization (fruits types, speed, angle range)
+- [x] Add guns customization (fruits types, speed, angle range)
 - [ ] Use State design-pattern
 - [ ] Add modal opacity transition

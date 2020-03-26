@@ -51,12 +51,50 @@ const LEVELS = [
         }
     },
     {
+        name: 'Team Fruit Salad',
+        diff: 'easy',
+        author: 'pkubiak',
+        players: [
+            {x: 100, y: 500, fruits: '01'},
+            {x: 220, y: 500, fruits: '56'}
+        ],
+        board: function() {
+            let rows = [];
+            for(let y=0;y<7;y++) {
+                let row = '';
+                for(let x=0;x<15;x++)
+                    row += ((x^y)&1)==0 ? 5*(y%2) + Math.floor(2 * Math.random()) : ' ';
+                rows.push(row);
+            }
+            return rows;
+        }
+    },
+    {
+        name: 'Monochromatic Salad',
+        diff: 'easy',
+        author: 'pkubiak',
+        players: [
+            {x: 160, y: 500, fruits: '0'}
+        ],
+        board: [
+            "0   0   0   0  ",
+            "               ",
+            "  0   0   0   0",
+            "               ",
+            "0   0   0   0  ",
+            "               ",
+            "  0   0   0   0",
+            "               ",
+            "0   0   0   0  ",
+        ]
+    },
+    {
         name: 'Fruit Salad',
         diff: 'easy',
         author: 'pkubiak',
         players: [
-            {x: 100, y: 500},
-            {x: 220, y: 500},
+            {x: 100, y: 500, fruits: '01234'},
+            {x: 220, y: 500, fruits: '01234'},
         ],
         board: [
             "0 0 0 0 0 0 0 0",
@@ -71,8 +109,8 @@ const LEVELS = [
         diff: 'medium',
         author: 'pkubiak',
         players: [
-            {x: 20, y: 500, speed: 4.0, baseAngle: 65, maxAngle: 20},
-            {x: 300, y: 500, speed: 4.0, baseAngle: -65, maxAngle: 20},
+            {x: 20, y: 500, baseAngle: 65, maxAngle: 20},
+            {x: 300, y: 500, baseAngle: -65, maxAngle: 20},
         ],
         board: [
             "0 0 0 0 0 0 0 0",
@@ -124,6 +162,8 @@ const LEVELS = [
             "x     x x     x",
         ]
     },
+
+
     // From: https://github.com/kthakore/frozen-bubble/blob/master/share/data/levels
     {
         "name": "Level 1",

@@ -101,7 +101,7 @@ class Board {
             this.last_timestamp = timestamp;
             for(let gun of this.guns) {
                 if(!gun.fruit)
-                    gun.setFruit(new Fruit(0, 0, random_fruit()))
+                    gun.putFruit();
                 gun.update();
             }
             BOARD.setHUD();
@@ -154,7 +154,7 @@ class Board {
         for(let i=0;i<level.players.length;i++) {
             let player = level.players[i];
             let params = {fireKey: CONTROLS[i]};
-            for(let key of ['speed', 'maxAngle', 'baseAngle'])
+            for(let key of ['speed', 'maxAngle', 'baseAngle', 'fruits'])
                 if(key in player)
                     params[key] = player[key];
 
@@ -395,13 +395,14 @@ Fruit.FLY_SPEED = 500;
 Fruit.RADIUS = 20;
 
 class Gun {
-    constructor(x, y, {speed=1.0, fireKey=undefined, maxAngle=60, baseAngle=0}) {
+    constructor(x, y, {speed=1.0, fireKey=undefined, maxAngle=60, baseAngle=0, fruits='01234567'}) {
         this.state = 'FREE';
 
-        this.speed = 0.5 * 360 * speed / maxAngle;
+        this.speed = 0.5 * 240 * speed / maxAngle;
         this.fireKey = fireKey;
         this.baseAngle = baseAngle;
         this.maxAngle = maxAngle;
+        this.fruitsTypes = fruits;
 
         this.direction = Math.random() < 0.5 ? 'right': 'left';
 
@@ -418,7 +419,7 @@ class Gun {
         this.setAngle(0.0);
         
         MAIN.appendChild(this.el);
-        this.setFruit(null);
+        this.putFruit();
 
         this.input = (event) => {
             switch(event.type) {
@@ -438,16 +439,15 @@ class Gun {
         }
     }
 
-    setFruit(fruit) {
-        this.fruit = fruit;
-        if(fruit) {
-            fruit.setPosition(this.x, this.y);
-            fruit.el.classList.add('resting');
-            fruit.el.classList.add('clickable');
+    putFruit() {
+        let next_fruit = FRUITS[+(this.fruitsTypes[Math.floor(Math.random()*this.fruitsTypes.length)])];
+        this.fruit = new Fruit(0, 0, next_fruit);
+        this.fruit.setPosition(this.x, this.y);
+        this.fruit.el.classList.add('resting');
+        this.fruit.el.classList.add('clickable');
 
-            for(let event of Gun.EVENTS)
-                fruit.el.addEventListener(event, this.input);
-        }
+        for(let event of Gun.EVENTS)
+            this.fruit.el.addEventListener(event, this.input);
     }
 
     getAngle() {
@@ -512,10 +512,6 @@ class Gun {
     }
 }
 Gun.EVENTS = ['mousedown', 'mouseup', 'mouseleave', 'touchstart', 'touchend'];
-
-function random_fruit() {
-    return FRUITS[Math.floor(Math.random() * FRUITS.length)];
-}
 
 function createLevelsList() {
     const view = document.getElementById('levels_list');
