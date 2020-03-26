@@ -3,7 +3,7 @@ const LEVELS = [
         name: 'Test 1',
         diff: 'easy',
         author: 'pkubiak',
-        players: 'default',
+        players: [{x: 200, y: 500, baseAngle: 40, maxAngle: 30, speed: 0.5}],
         board: [
             "               ",
             " 1 1 1 1 1 1 1 ",
@@ -55,8 +55,8 @@ const LEVELS = [
         diff: 'easy',
         author: 'pkubiak',
         players: [
-            {x: 100, y: 500, speed: 1.0},
-            {x: 220, y: 500, speed: 2.0},
+            {x: 100, y: 500},
+            {x: 220, y: 500},
         ],
         board: [
             "0 0 0 0 0 0 0 0",
@@ -64,6 +64,26 @@ const LEVELS = [
             "2 2 2 2 2 2 2 2",
             " 3 3 3 3 3 3 3 ",
             "4 4 4 4 4 4 4 4",
+        ]
+    },
+    {
+        name: 'Side by Side',
+        diff: 'medium',
+        author: 'pkubiak',
+        players: [
+            {x: 20, y: 500, speed: 4.0, baseAngle: 65, maxAngle: 20},
+            {x: 300, y: 500, speed: 4.0, baseAngle: -65, maxAngle: 20},
+        ],
+        board: [
+            "0 0 0 0 0 0 0 0",
+            " 1 1 1 1 1 1 1 ",
+            "2 2 2 2 2 2 2 2",
+            " 3 3 3 3 3 3 3 ",
+            "4 4 4 4 4 4 4 4",
+            "               ",
+            "               ",
+            "               ",
+            "      x x      "
         ]
     },
     {
@@ -1917,7 +1937,7 @@ const LEVELS = [
         levelNames[level.name] = true;
 
         if(level.players == 'default') {
-            level.players = [{x: 160, y: 500, speed: 2.0}];
+            level.players = [{x: 160, y: 500}];
         }
     }
 })();

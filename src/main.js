@@ -153,7 +153,12 @@ class Board {
 
         for(let i=0;i<level.players.length;i++) {
             let player = level.players[i];
-            let gun = new Gun(player.x, player.y, player.speed || 1.0, CONTROLS[i]);
+            let params = {fireKey: CONTROLS[i]};
+            for(let key of ['speed', 'maxAngle', 'baseAngle'])
+                if(key in player)
+                    params[key] = player[key];
+
+            let gun = new Gun(player.x, player.y, params);
             this.guns.push(gun);
         }
 
@@ -390,11 +395,14 @@ Fruit.FLY_SPEED = 500;
 Fruit.RADIUS = 20;
 
 class Gun {
-    constructor(x, y, speed=1.0, fireKey=undefined) {
+    constructor(x, y, {speed=1.0, fireKey=undefined, maxAngle=60, baseAngle=0}) {
         this.state = 'FREE';
 
-        this.speed = speed;
+        this.speed = 0.5 * 360 * speed / maxAngle;
         this.fireKey = fireKey;
+        this.baseAngle = baseAngle;
+        this.maxAngle = maxAngle;
+
         this.direction = Math.random() < 0.5 ? 'right': 'left';
 
         this.x = x;
@@ -442,9 +450,13 @@ class Gun {
         }
     }
 
+    getAngle() {
+        return this.baseAngle + (this.maxAngle * this.angle);
+    }
+
     setAngle(angle) {
         this.angle = angle;
-        this.el.style.transform = 'translate(-50%, -100%) rotate(' + (Gun.MAX_ANGLE * angle) + 'deg)';
+        this.el.style.transform = 'translate(-50%, -100%) rotate(' + this.getAngle() + 'deg)';
     }
 
     destroy() {
@@ -495,11 +507,10 @@ class Gun {
 
             this.fruit.el.classList.remove('clickable');
             this.fruit.setRotating(true);
-            this.fruit.direction = 2.0 * Math.PI * (this.angle * Gun.MAX_ANGLE) / 360.0; // direction in radians
+            this.fruit.direction = 2.0 * Math.PI * this.getAngle() / 360.0; // direction in radians
         }
     }
 }
-Gun.MAX_ANGLE = 60;
 Gun.EVENTS = ['mousedown', 'mouseup', 'mouseleave', 'touchstart', 'touchend'];
 
 function random_fruit() {
