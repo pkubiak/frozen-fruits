@@ -27,7 +27,7 @@ class ViewModal {
         main.classList.add('modal');
 
         const modal = document.querySelector('#view-modal');
-        modal.style.display = 'block';
+        modal.classList.remove('hidden');
 
         const html = ViewModal.templates[name](params);
         modal.innerHTML = html;
@@ -110,12 +110,14 @@ class Board {
         return true;
     }
 
-    keypress(event) {
-        console.log(this.guns);
+    input(event) {
+        // ignore repeated key press
+        if(event.repeat)
+            return; 
+
         for(let gun of this.guns)
             if(event.code == gun.fireKey)
-                gun.fire();
-        console.log(event);
+                gun.input(event);
     }
 
     setHUD() {       
@@ -188,7 +190,6 @@ class Board {
 
     /* Find the closest grid point to the given fruit */
     snapToGrid(fruit) {
-        
         let best = Infinity, best_pos = null;
 
         for(let y = 0;y < this.grid.length; y++) 
@@ -316,7 +317,7 @@ class Board {
 Board.HEIGHT = 14;
 Board.WIDTH = 8;
 
-FRUITS = ['kiwi', 'strawberry', 'cocoa', 'watermelon', 'apple', 'orange', 'lemon', 'cherry']; //, 'bannana'];
+FRUITS = ['kiwi', 'strawberry', 'cocoa', 'watermelon', 'apple', 'orange', 'lemon', 'cherry'];
 
 class Fruit {
     constructor(x, y, type) {
@@ -398,17 +399,35 @@ class Gun {
 
         this.x = x;
         this.y = y;
+        this.slowdown = false;
+
         this.el = document.createElement('div');
         this.el.className = 'gun';
         this.el.style.left = x + 'px';
         this.el.style.top = y + 'px';
+
 
         this.setAngle(0.0);
         
         MAIN.appendChild(this.el);
         this.setFruit(null);
 
-        this.callback = () => this.fire();
+        this.input = (event) => {
+            switch(event.type) {
+                case 'keydown':
+                case 'mousedown':
+                case 'touchstart':
+                    this.slowdown = true;
+                    break
+                case 'keyup':
+                case 'mouseup':
+                case 'mouseleave':
+                case 'touchend':
+                    this.slowdown = false;
+                    this.fire();
+                    break;
+            }
+        }
     }
 
     setFruit(fruit) {
@@ -416,8 +435,10 @@ class Gun {
         if(fruit) {
             fruit.setPosition(this.x, this.y);
             fruit.el.classList.add('resting');
-            fruit.el.addEventListener('click', this.callback);
-            this.fruit.el.classList.add('clickable');
+            fruit.el.classList.add('clickable');
+
+            for(let event of Gun.EVENTS)
+                fruit.el.addEventListener(event, this.input);
         }
     }
 
@@ -434,22 +455,18 @@ class Gun {
     }
     update() {
         if(this.state == 'FREE') {
-            let angle = this.angle;
-            if(this.direction == 'right') {
-                angle += (this.speed / FPS);
-                if(angle >= 1.0) {
-                    this.direction = 'left';
-                    angle = 1.0;
-                }
-            } else {
-                angle -= (this.speed / FPS);
-                if(angle <= -1.0) {
-                    this.direction = 'right';
-                    angle = -1.0;
-                }
+            let speed = (this.slowdown ? 0.2 : 1.0) * this.speed / FPS;
+            let angle = this.angle + (this.direction == 'left' ? -1 : 1) * speed;
+
+            if(angle >= 1.0) {
+                this.direction = 'left';
+                angle = 1.0;
+            } else if(angle <= -1.0) {
+                this.direction = 'right';
+                angle = -1.0;
             }
+
             this.setAngle(angle);
-            // this.setAngle(0.1);
         } else 
         if(this.state == 'FLY') {
             if(!this.fruit.fly()) {
@@ -465,7 +482,6 @@ class Gun {
                     this.state = 'FREE';
                 }
             }
-
         }
     }
 
@@ -473,7 +489,10 @@ class Gun {
         if(this.state == 'FREE' && this.fruit) {
             this.state = 'FLY';
             console.log('Fire!');
-            this.fruit.el.removeEventListener('click', this.callback);
+
+            for(let event of Gun.EVENTS)
+                this.fruit.el.removeEventListener(event, this.input);
+
             this.fruit.el.classList.remove('clickable');
             this.fruit.setRotating(true);
             this.fruit.direction = 2.0 * Math.PI * (this.angle * Gun.MAX_ANGLE) / 360.0; // direction in radians
@@ -481,6 +500,7 @@ class Gun {
     }
 }
 Gun.MAX_ANGLE = 60;
+Gun.EVENTS = ['mousedown', 'mouseup', 'mouseleave', 'touchstart', 'touchend'];
 
 function random_fruit() {
     return FRUITS[Math.floor(Math.random() * FRUITS.length)];
@@ -526,10 +546,10 @@ function createLevelsList() {
 }
 
 function init() {
+    createLevelsList();
+
     document.querySelector('main').classList.remove('spinner');
     document.querySelector('#view-levels').classList.remove('hidden');
-
-    createLevelsList();
 }
 
 function init_game(level) {
@@ -540,7 +560,9 @@ function init_game(level) {
 
     BOARD = new Board();
 
-    document.onkeypress = (event) => BOARD.keypress(event);
+    document.addEventListener('keydown', (event) => BOARD.input(event));
+    document.addEventListener('keyup', (event) => BOARD.input(event));
+
 
     BOARD.loadLevel(level);
 

@@ -11,6 +11,8 @@ Frozen Bubble clone with a lot of fruits! Play at https://pkubiak.github.io/froz
 ## TODO ##
 - [x] Mobile Support
 - [ ] Main menu
+  - [ ] Help Screen
+  - [ ] Credits Screen
 - [x] High Scores (via LocalStorage)
 - [ ] More levels:
   - [ ] With multiplayer
@@ -18,15 +20,8 @@ Frozen Bubble clone with a lot of fruits! Play at https://pkubiak.github.io/froz
   - [ ] Custom levels
   - [x] Random generated
 - [x] Win / Loss
-- [ ] Gun slowdown on key hold
-- [ ] Bugfixes:
-  - [ ] Falling orphaned fruits 
-  - [ ] Player death 
-  - [ ] Colliding flying fruits couse one player death
-  - [ ] Orphaned fruits doesnt add to score correctly?
-  - [ ] Estimate real FPS not use FPS const
-  - [ ] Missing Background Filter in Firefox
+- [x] Gun slowdown on key hold
 - [ ] Use free background
-- [ ] Help Screen
 - [ ] Add guns customization (fruits types, speed, angle range)
-- [ ] Implement State pattern
+- [ ] Use State design-pattern
+- [ ] Add modal opacity transition
