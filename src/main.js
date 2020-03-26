@@ -23,14 +23,18 @@ class HighScore {
 
 class ViewModal {
     static show(name, params) {
-        const main = document.querySelector('main');
-        main.classList.add('modal');
+        document.body.classList.add('modal');
 
         const modal = document.querySelector('#view-modal');
-        modal.classList.remove('hidden');
-
         const html = ViewModal.templates[name](params);
         modal.innerHTML = html;
+    }
+
+    static hide() {
+        document.body.classList.remove('modal');
+
+        const modal = document.querySelector('#view-modal');
+        modal.innerHTML = '';
     }
 
     static registerTemplate(name, template_fn) {
@@ -419,24 +423,30 @@ class Gun {
         this.setAngle(0.0);
         
         MAIN.appendChild(this.el);
-        this.putFruit();
 
-        this.input = (event) => {
-            switch(event.type) {
+        // HACK: to correctly bind this inside handler
+        this.callback = (event) => this.input(event); 
+
+        this.putFruit();
+    }
+
+    input(event) {
+        switch(event.type) {
                 case 'keydown':
                 case 'mousedown':
                 case 'touchstart':
                     this.slowdown = true;
-                    break
+                    break;
+                case 'mouseleave':
+                    if(!this.slowdown)
+                        break;
                 case 'keyup':
                 case 'mouseup':
-                case 'mouseleave':
                 case 'touchend':
                     this.slowdown = false;
                     this.fire();
                     break;
             }
-        }
     }
 
     putFruit() {
@@ -447,7 +457,7 @@ class Gun {
         this.fruit.el.classList.add('clickable');
 
         for(let event of Gun.EVENTS)
-            this.fruit.el.addEventListener(event, this.input);
+            this.fruit.el.addEventListener(event, this.callback);
     }
 
     getAngle() {
@@ -503,7 +513,7 @@ class Gun {
             console.log('Fire!');
 
             for(let event of Gun.EVENTS)
-                this.fruit.el.removeEventListener(event, this.input);
+                this.fruit.el.removeEventListener(event, this.callback);
 
             this.fruit.el.classList.remove('clickable');
             this.fruit.setRotating(true);
