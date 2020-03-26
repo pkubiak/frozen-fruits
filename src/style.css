@@ -322,6 +322,10 @@ a.stretched::before {
     max-height: 622px;
     overflow-y: auto;
     overflow-x: hidden;
+
+    /* scrollbar styling for firefox */
+    scrollbar-color: #df779499 transparent;
+    scrollbar-width: thin;
 }
 
 #view-board {
