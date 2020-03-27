@@ -22,12 +22,13 @@ class HighScore {
 
 
 class ViewModal {
-    static show(name, params) {
-        document.body.classList.add('modal');
-
+    static show(name, params, callback) {
         const modal = document.querySelector('#view-modal');
         const html = ViewModal.templates[name](params);
         modal.innerHTML = html;
+        modal.onclick = callback || ViewModal.hide;
+
+        document.body.classList.add('modal');
     }
 
     static hide() {
@@ -66,6 +67,19 @@ ViewModal.registerTemplate('loss', function() {
     `;
 });
 
+ViewModal.registerTemplate('help', function() {
+    return `
+        <h1>Help</h1>
+        <h2>-- Goal --</h2>
+        <h3 style="opacity:0.8">Destroy all fruits on board by connecting 3 of the same kind.
+        <h2>-- Controls --</h2>
+        <h3 style="opacity:0.8">Mouse/Touch: Click on gun</h3>
+        <h3 style="opacity:0.8">Keyboard: KeyZ (red) / KeyM (green) / KeyP (blue) / Enter (yellow)</h3>
+        <h3 style="opacity:0.8">Hold to slow down</h3>
+        <a href="https://github.com/pkubiak/frozen-fruits" onclick="event.stopPropagation()" class="btn" target="_blank">Read more on GitHub</a>
+    `
+});
+
 
 
 class Board {
@@ -90,13 +104,23 @@ class Board {
 
     update(timestamp) {
         if(this.allGunsDestroyed()) {
-            ViewModal.show('loss');
+            ViewModal.show('loss', {}, () => {
+                this.destroy();
+                createLevelsList();
+                switchView('levels');
+                ViewModal.hide();
+            });
             return false;
         }
         if(this.isClear()) {
             ViewModal.show('win', {
                 score: this.score,
                 highscore: HighScore.set(this.level_name, this.score)
+            }, () => {
+                this.destroy();
+                createLevelsList();
+                switchView('levels');
+                ViewModal.hide();
             })
             return false;
         }
@@ -187,7 +211,6 @@ class Board {
 
             let t0 = dot - ddist, t1 = dot + ddist;
             if(t0 <= 0.0 && t1 >= 0.0) {
-                // console.log(t0, t1, dot, ddist, min_dist);
                 return 0.0;
             }
             if(t0 > 0 && t0 < best)
@@ -304,7 +327,6 @@ class Board {
     }
 
     removeFromGrid(x, y) {
-        // console.log(x, y)
         let fruit = this.grid[y][x];
         this.grid[y][x] = undefined;
         this.fruits.splice(this.fruits.indexOf(fruit), 1);
@@ -320,6 +342,14 @@ class Board {
             if(gun.state != 'KILLED')
                 return false;
         return true;
+    }
+
+    destroy() {
+        console.log('Destroy');
+        MAIN.innerHTML = '';
+        document.removeEventListener('keydown', BOARD.handler);
+        document.removeEventListener('keyup', BOARD.handler);
+        BOARD = null;
     }
 }
 
@@ -525,6 +555,7 @@ Gun.EVENTS = ['mousedown', 'mouseup', 'mouseleave', 'touchstart', 'touchend'];
 
 function createLevelsList() {
     const view = document.getElementById('levels_list');
+    view.innerHTML = ''; // clear levels list
 
     for(let diff of ['easy', 'medium', 'hard', 'original']) {
         const h2 = document.createElement('h2');
@@ -554,32 +585,36 @@ function createLevelsList() {
                 </td>
                 <td>${bestScore}</td>
             `;
-            tr.querySelector('a').addEventListener('click', () => init_game(level));
+            tr.querySelector('a').addEventListener('click', () => initGame(level));
             table.appendChild(tr);
         }
 
         view.appendChild(table);
     }
 }
+function switchView(name) {
+    for(let view of ['board', 'menu', 'levels'])
+        document.querySelector('#view-'+ view).classList[name == view ? 'remove' : 'add']('hidden');
+}
 
 function init() {
     onresize();
     createLevelsList();
 
+    switchView('menu');
+
     document.body.classList.remove('spinner');
-    document.querySelector('#view-levels').classList.remove('hidden');
 }
 
-function init_game(level) {
-    document.querySelector('#view-levels').classList.add('hidden');
-    document.querySelector('#view-board').classList.remove('hidden');
+function initGame(level) {
+    switchView('board');
 
     MAIN = document.getElementById('board');
 
     BOARD = new Board();
-
-    document.addEventListener('keydown', (event) => BOARD.input(event));
-    document.addEventListener('keyup', (event) => BOARD.input(event));
+    BOARD.handler = (event) => BOARD.input(event)
+    document.addEventListener('keydown', BOARD.handler);
+    document.addEventListener('keyup', BOARD.handler);
 
 
     BOARD.loadLevel(level);
@@ -592,15 +627,12 @@ function init_game(level) {
     window.requestAnimationFrame(loop);
 }
 
-function onresize(event) {
-    let zoom = Math.min(
+function onresize() {
+    document.body.style.zoom = Math.min(
         window.innerHeight / 660,
         window.innerWidth / 400,
         1.0
     );
-    
-    document.body.style.zoom = zoom;
-    console.log(zoom, event);
 }
 
 document.body.onresize = onresize;

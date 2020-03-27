@@ -10,8 +10,9 @@ Frozen Bubble clone with a lot of fruits! Play at https://pkubiak.github.io/froz
 
 ## TODO ##
 - [x] Mobile Support
-- [ ] Main menu
-  - [ ] Help Screen
+- [x] Main menu
+  - [x] Help Screen
+  - [ ] Highscores Screen
   - [ ] Credits Screen
 - [x] High Scores (via LocalStorage)
 - [ ] More levels:
@@ -25,3 +26,7 @@ Frozen Bubble clone with a lot of fruits! Play at https://pkubiak.github.io/froz
 - [x] Add guns customization (fruits types, speed, angle range)
 - [ ] Use State design-pattern
 - [ ] Add modal opacity transition
+- [ ] Distinguish different players with color arrows
+- [ ] Convert to PWA
+- [ ] Thanks OGA contributors
+- [ ] Add exit button during gameplay
