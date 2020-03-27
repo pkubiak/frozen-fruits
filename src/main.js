@@ -563,9 +563,10 @@ function createLevelsList() {
 }
 
 function init() {
+    onresize();
     createLevelsList();
 
-    document.querySelector('main').classList.remove('spinner');
+    document.body.classList.remove('spinner');
     document.querySelector('#view-levels').classList.remove('hidden');
 }
 
@@ -590,3 +591,16 @@ function init_game(level) {
 
     window.requestAnimationFrame(loop);
 }
+
+function onresize(event) {
+    let zoom = Math.min(
+        window.outerHeight / 660,
+        window.outerWidth / 400,
+        1.0
+    );
+    
+    document.body.style.zoom = zoom;
+    console.log(zoom, event);
+}
+
+document.body.onresize = onresize;

@@ -6,6 +6,8 @@ z-index:
 - 200 -> gun fruit
 - 249 -> modal backdrop
 - 250 -> modal
+- 299 -> spinner backdrop
+- 300 -> spinner
 */
 body, html {
     width: 100%;
@@ -172,7 +174,7 @@ main {
     background: white;
     border-radius: 5px;
 
-    height: 622px;
+    height: 620px;
 }
 
 nav {
@@ -366,24 +368,20 @@ body.modal .wrapper {
     width: 100%; height: 100%;
     background:url(gfx/bg.jpg);
     background-size: cover;
+    object-fit: contain;
 }
-/* body.modal > div.blurer {
-    opacity: 0.5;
-}  */
-
-/* main.modal::after {
-    content: "";
-    display: block;
-    position: fixed;
-    left: -10px; top: -10px;
-    right: -10px; bottom: -10px;
-    backdrop-filter: blur(5px);
-    background: rgba(255,255,255,0.5);
-    z-index: 249;
-    border-radius: 5px;
-} */
 
 .spinner::before {
+    content: "";
+    display: block;
+    background: white;
+    position: absolute;
+    width: 100%; height: 100%;
+    left: 0; top: 0;
+    z-index: 299;
+}
+
+.spinner::after {
     content: "";
     display: block;
     
@@ -398,6 +396,7 @@ body.modal .wrapper {
     animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
     animation-direction: normal;
+    z-index: 300;
 }
 
 @keyframes spinner {
