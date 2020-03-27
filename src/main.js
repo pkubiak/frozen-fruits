@@ -594,8 +594,8 @@ function init_game(level) {
 
 function onresize(event) {
     let zoom = Math.min(
-        window.outerHeight / 660,
-        window.outerWidth / 400,
+        window.innerHeight / 660,
+        window.innerWidth / 400,
         1.0
     );
     
