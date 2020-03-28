@@ -562,12 +562,12 @@ body.spinner #warning {
     opacity: 1;
 }
 
-.btn-close {
+.pop-left {
     position: absolute;
-    right: 0;
-    text-decoration: none;
-    padding: 0 4px;
+    left: 0;
 }
-.btn-close::before {
-    content: "✕";
+
+.icon-back::before {
+    content: "⬅️";
+    padding: 0 4px;
 }
