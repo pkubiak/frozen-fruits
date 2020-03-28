@@ -6,6 +6,7 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
     <link rel="stylesheet" href="src/style.css" />
+    <link rel="preload" href="src/gfx/fruits.png" as="image" />
 </head>
 
 <body onload="javascript:init()" class="spinner">
@@ -29,17 +30,27 @@
             </div>
 
             <div class="hidden" id="view-menu">
-                <h1 id="logo">Frozen Fruits</h1>
+                <div id="logo">
+                    <h1 >Frozen Fruits</h1>
+                </div>
+
                 <a href="javascript:void(0)" onclick="switchView('levels')" class="btn">Start Game</a>
                 <a href="javascript:void(0)" onclick="" class="btn disabled">Highscores</a>
                 <a href="javascript:void(0)" onclick="" class="btn disabled">Credits</a>
                 <a href="javascript:void(0)" onclick="ViewModal.show('help')" class="btn" style="margin-top: 40px;">Help</a>
+
+                <canvas width="360" height="620"></canvas>
             </div>
         </main>
     </div>
 </div>
 
 <div id="view-modal"></div>
+
+<div id="warning" style="display: none">
+    <h2>Oops, something went wrong. Whatever happened, it was probably our fault :/</h2>
+    <h3>Please report it! <a href="https://github.com/pkubiak/frozen-fruits/issues">github.com/pkubiak/frozen-fruits</a></h3>
+</div>
 
 <!-- lazy loading -->
 <script src="src/levels.js"></script>

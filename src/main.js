@@ -598,38 +598,30 @@ function switchView(name) {
 }
 
 function initFlyingFruits() {
-    const fruits = [];
-    const view = document.querySelector('#view-menu');
+    const canvas = document.querySelector('canvas');
+    const ctx = canvas.getContext('2d');
+    const fruits = document.createElement('img');
+    fruits.src = 'src/gfx/fruits.png';
 
-    for(let i=0;i<5;i++) {
-        let fruit = document.createElement('div');
-        fruit.classList.add('animated-fruit');
-        fruit.style.backgroundPositionX = (-128*i) + 'px';
-        fruits.push(fruit);
-        view.appendChild(fruit);
-    }
+    fruits.onload = function() {
+        // draw 500 random fruits in backgrund
+        for(let i=0;i<500;i++) {
+            let i = Math.floor(Math.random() * 9);
 
-    const randomize = function() {
-        for(let fruit of document.querySelectorAll('.animated-fruit')) {
-            fruit.style.left = (Math.random() * 360) + 'px';
-            fruit.style.top =  (Math.random() * 620) + 'px';
+            ctx.drawImage(fruits, 128 * i, 0, 128, 128, 360 * Math.random() - 64, 620 * Math.random() - 64, 128, 128);
         }
-    };
-
-    randomize();
-    setInterval(randomize, 4000);
-    setTimeout(randomize, 0);
+    }
 }
 
 function init() {
     onresize();
     createLevelsList();
+    initFlyingFruits();
 
     switchView('menu');
 
     document.body.classList.remove('spinner');
 
-    initFlyingFruits();
     
 }
 

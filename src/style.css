@@ -440,7 +440,14 @@ body.modal .wrapper {
     100.00% {transform: rotate(0deg); opacity: 0; background-position-x: 100.00%;}
 }
 
+
 #logo {
+    background: #fff9;
+    padding-top: 20px;
+    padding-bottom: 30px;
+}
+
+#logo h1 {
     background: url(gfx/fruits.png);
     text-align: center;;
     background-size: auto 32px;
@@ -448,8 +455,12 @@ body.modal .wrapper {
     background-position: center bottom;
     padding-bottom: 32px;
     font-size:40px;
-    margin-bottom: 60px;
-    margin-top:120px
+    margin: 0;
+}
+
+.hr-fruit {
+    height: 32px;
+    
 }
 
 /* From bootstrap */
@@ -462,19 +473,10 @@ body.modal .wrapper {
     text-shadow: 0 -1px 0 rgba(0,0,0,.5);
     background-color: #3072b3;
     background-repeat: repeat-x;
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #599bdc), color-stop(100%, #3072b3));
-    background-image: -webkit-linear-gradient(top, #599bdc 0, #3072b3 100%);
-    background-image: -moz-linear-gradient(top, #599bdc 0, #3072b3 100%);
-    background-image: -ms-linear-gradient(top, #599bdc 0, #3072b3 100%);
-    background-image: -o-linear-gradient(top, #599bdc 0, #3072b3 100%);
-    background-image: linear-gradient(top, #599bdc 0, #3072b3 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#599bdc', endColorstr='#3072b3', GradientType=0);
+    background-image: linear-gradient(#599bdc, #3072b3);
     border: 1px solid #2967a4;
     border-radius: 6px;
     box-shadow: inset 0 1px 0 rgba(255,255,255,.1);
-    -webkit-transition: none;
-    -moz-transition: none;
-    -o-transition: none;
     transition: none;
 
     display: block;
@@ -492,14 +494,53 @@ body.modal .wrapper {
 }
 
 .btn.disabled {
-    opacity: 0.4;
+    /* opacity: 0.8; */
+    background-color: #737373; 
+    background-image: linear-gradient(#9c9c9c, #737373);
+    border-color: #666666;
     pointer-events: none;
 }
 
-.animated-fruit {
-    height: 128px; width: 128px; background: url(gfx/fruits.png); opacity: 0.4; z-index: 0;position: absolute;
-    left: 0px; top: 0px;
-    transform: translate(-50%, -50%);
-    transition: left 4s, top 4s;
+#view-menu {
+    /* background: #fff8; */
+    margin-top: 100px;
+    padding: 20px 0;
+}
+
+#view-menu canvas {
+    position: absolute;
+    left:0; top: 0;
     z-index: -1;
+    opacity: 0.3;
+    border-radius: 4px;
+}
+
+body.spinner #warning {
+    z-index: 1000;
+    position: absolute;
+    width: 360px;
+    text-align: center;
+
+    top: calc(50% + 64px); left: calc(50% - 180px);
+    margin: 0;
+    padding: 0;
+
+    opacity: 0;
+    display: block !important;
+
+    animation-name: delayedShow;
+    animation-delay: 10s;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+
+@keyframes delayedShow {
+    0% {opacity: 0;}
+    100% {opacity: 1;}
+}
+
+#warning a {
+    color: blueviolet;
 }

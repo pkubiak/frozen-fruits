@@ -22,6 +22,7 @@ TBA
 ## TODO ##
 - [x] Mobile Support
 - [x] Main menu
+  - [x] Nice Main menu
   - [x] Help Screen
   - [ ] Highscores Screen
   - [ ] Credits Screen
@@ -42,3 +43,4 @@ TBA
 - [ ] Thanks OGA contributors
 - [ ] Add exit button during gameplay
 - [ ] Complete README.md
+- [x] Loading error message
