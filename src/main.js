@@ -28,6 +28,13 @@ class ViewModal {
         modal.innerHTML = html;
         modal.onclick = callback || ViewModal.hide;
 
+        // Prevent modal closing on link click
+        for(let link of modal.querySelectorAll('a'))
+            if(link.href.startsWith('http')) {
+                link.onclick = (event) => event.stopPropagation();
+                link.target = '_blank';
+            }
+
         document.body.classList.add('modal');
     }
 
@@ -76,10 +83,24 @@ ViewModal.registerTemplate('help', function() {
         <h3 style="opacity:0.8">Mouse/Touch: Click on gun</h3>
         <h3 style="opacity:0.8">Keyboard: KeyZ (red) / KeyM (green) / KeyP (blue) / Enter (yellow)</h3>
         <h3 style="opacity:0.8">Hold to slow down</h3>
-        <a href="https://github.com/pkubiak/frozen-fruits" onclick="event.stopPropagation()" class="btn" target="_blank">Read more on GitHub</a>
+        <a href="https://github.com/pkubiak/frozen-fruits/blob/master/README.md" class="btn">Read more on GitHub</a>
     `
 });
 
+ViewModal.registerTemplate('credits', function() {
+    return `
+        <h1>Credits</h1>
+        <h2>Programming</h2>
+        <h3><a href="https://github.com/pkubiak/">Paweł Kubiak</a></h3>
+        <h2>Testing</h2>
+        <h3>...</h3>
+        <h2>OpenGameArt.org Assets</h2>
+        <h3><a href="https://opengameart.org/content/flat-designed-fruits">"flat designed fruits" by princesseFranky</a></h3>
+        <h3><a href="https://opengameart.org/content/snow-flake">"Snow flake" by mkwong98</a></h3>
+        <h3><a href="https://opengameart.org/content/simple-ornamented-arrow">"Simple ornamented arrow" by Nallebeorn</a></h3>
+        <h3><a href="https://opengameart.org/content/pirate-skull">"Pirate Skull" by pechvogel</a></h3>
+    `;
+});
 
 
 class Board {
@@ -104,24 +125,14 @@ class Board {
 
     update(timestamp) {
         if(this.allGunsDestroyed()) {
-            ViewModal.show('loss', {}, () => {
-                this.destroy();
-                createLevelsList();
-                switchView('levels');
-                ViewModal.hide();
-            });
+            ViewModal.show('loss', {}, () => switchView('levels'));
             return false;
         }
         if(this.isClear()) {
             ViewModal.show('win', {
                 score: this.score,
                 highscore: HighScore.set(this.level_name, this.score)
-            }, () => {
-                this.destroy();
-                createLevelsList();
-                switchView('levels');
-                ViewModal.hide();
-            })
+            }, () => switchView('levels'));
             return false;
         }
 
@@ -592,9 +603,28 @@ function createLevelsList() {
         view.appendChild(table);
     }
 }
+
+let currentView = null;
 function switchView(name) {
-    for(let view of ['board', 'menu', 'levels'])
-        document.querySelector('#view-'+ view).classList[name == view ? 'remove' : 'add']('hidden');
+    // TODO: refactor into State Pattern ;P
+
+    // beforeSwitchFrom
+    if(currentView == 'board') {
+        BOARD.destroy();
+    }
+
+    // beforSwitchTo
+    if(name == 'levels') {
+        createLevelsList();
+    }
+
+    ViewModal.hide();
+
+    if(currentView)
+        document.querySelector('#view-' + currentView).classList.add('hidden');
+
+    currentView = name;
+    document.querySelector('#view-' + currentView).classList.remove('hidden');
 }
 
 function initFlyingFruits() {
@@ -621,8 +651,6 @@ function init() {
     switchView('menu');
 
     document.body.classList.remove('spinner');
-
-    
 }
 
 function initGame(level) {
@@ -639,7 +667,7 @@ function initGame(level) {
     BOARD.loadLevel(level);
 
     let loop = function(timestamp) {
-        if(BOARD.update(timestamp))
+        if(BOARD && BOARD.update(timestamp))
             window.requestAnimationFrame(loop);
     }
 

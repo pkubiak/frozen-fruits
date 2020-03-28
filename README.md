@@ -25,7 +25,7 @@ TBA
   - [x] Nice Main menu
   - [x] Help Screen
   - [ ] Highscores Screen
-  - [ ] Credits Screen
+  - [x] Credits Screen
 - [x] High Scores (via LocalStorage)
 - [ ] More levels:
   - [ ] With multiplayer
@@ -41,6 +41,6 @@ TBA
 - [ ] Distinguish different players with color arrows
 - [ ] Convert to PWA
 - [ ] Thanks OGA contributors
-- [ ] Add exit button during gameplay
+- [x] Add exit button during gameplay
 - [ ] Complete README.md
 - [x] Loading error message

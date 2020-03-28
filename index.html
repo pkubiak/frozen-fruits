@@ -15,6 +15,8 @@
     <div class="bg-wrapper">
         <main>
             <div class="hidden" id="view-board">
+                <a href="#" onclick="switchView('levels')" class="btn-close"></a>
+
                 <span id="hud_level">level name (easy)</span>
                 <div id="board"></div>
                 <nav>
@@ -24,20 +26,18 @@
             </div>
 
             <div class="hidden" id="view-levels">
-                <a href="javascript:void(0)" onclick="switchView('menu')">⬅️ go back</a>
+                <a href="#" onclick="switchView('menu')" class="btn-link">⬅️ go back</a>
                 <h2 style="text-align: center">Select level</h2>
                 <div id="levels_list"></div>
             </div>
 
             <div class="hidden" id="view-menu">
-                <div id="logo">
-                    <h1 >Frozen Fruits</h1>
-                </div>
+                <div id="logo"><h1 >Frozen Fruits</h1></div>
 
-                <a href="javascript:void(0)" onclick="switchView('levels')" class="btn">Start Game</a>
-                <a href="javascript:void(0)" onclick="" class="btn disabled">Highscores</a>
-                <a href="javascript:void(0)" onclick="" class="btn disabled">Credits</a>
-                <a href="javascript:void(0)" onclick="ViewModal.show('help')" class="btn" style="margin-top: 40px;">Help</a>
+                <a href="#" onclick="switchView('levels')" class="btn">Start Game</a>
+                <a href="#" onclick="" class="btn disabled">Highscores</a>
+                <a href="#" onclick="ViewModal.show('credits')" class="btn">Credits</a>
+                <a href="#" onclick="ViewModal.show('help')" class="btn" style="margin-top: 40px;">Help</a>
 
                 <canvas width="360" height="620"></canvas>
             </div>
