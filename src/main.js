@@ -597,6 +597,30 @@ function switchView(name) {
         document.querySelector('#view-'+ view).classList[name == view ? 'remove' : 'add']('hidden');
 }
 
+function initFlyingFruits() {
+    const fruits = [];
+    const view = document.querySelector('#view-menu');
+
+    for(let i=0;i<5;i++) {
+        let fruit = document.createElement('div');
+        fruit.classList.add('animated-fruit');
+        fruit.style.backgroundPositionX = (-128*i) + 'px';
+        fruits.push(fruit);
+        view.appendChild(fruit);
+    }
+
+    const randomize = function() {
+        for(let fruit of document.querySelectorAll('.animated-fruit')) {
+            fruit.style.left = (Math.random() * 360) + 'px';
+            fruit.style.top =  (Math.random() * 620) + 'px';
+        }
+    };
+
+    randomize();
+    setInterval(randomize, 4000);
+    setTimeout(randomize, 0);
+}
+
 function init() {
     onresize();
     createLevelsList();
@@ -604,6 +628,9 @@ function init() {
     switchView('menu');
 
     document.body.classList.remove('spinner');
+
+    initFlyingFruits();
+    
 }
 
 function initGame(level) {

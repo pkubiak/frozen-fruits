@@ -186,6 +186,7 @@ main {
     border-radius: 5px;
 
     height: 620px;
+    overflow: hidden;
 }
 
 nav {
@@ -307,11 +308,9 @@ a.stretched::before {
 
 #view-levels {
     background: white;
-    max-height: 622px;
+    max-height: 620px;
     overflow-y: auto;
     overflow-x: hidden;
-
-
 }
 
 ::-webkit-scrollbar {
@@ -497,9 +496,10 @@ body.modal .wrapper {
     pointer-events: none;
 }
 
-/*.animated-fruit {
+.animated-fruit {
     height: 128px; width: 128px; background: url(gfx/fruits.png); opacity: 0.4; z-index: 0;position: absolute;
-    left: 0; top: 0;
+    left: 0px; top: 0px;
     transform: translate(-50%, -50%);
-    transition: left 10s, top 10s;
-}*/
+    transition: left 4s, top 4s;
+    z-index: -1;
+}
