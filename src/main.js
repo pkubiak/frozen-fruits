@@ -70,7 +70,7 @@ ViewModal.registerTemplate('win', function(params) {
 ViewModal.registerTemplate('loss', function() {
     return `
         <h2>Ha ha ha</h2>
-        <h3>You loss!</h3>
+        <h3>You lost!</h3>
     `;
 });
 
@@ -104,9 +104,8 @@ ViewModal.registerTemplate('credits', function() {
 
 
 class Board {
-    last_timestamp = null;
-
     constructor() {       
+        this.last_timestamp = null;
         this.startTime = (new Date()).getTime();
         this.score = 0;
         this.level_name = '';
